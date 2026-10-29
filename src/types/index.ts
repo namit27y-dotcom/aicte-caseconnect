@@ -41,6 +41,8 @@ export interface UserPersona {
   bureau?: BureauType;
   bureauName?: string;
   avatarInitials: string;
+  status: 'ACTIVE' | 'SUSPENDED' | 'PENDING_VERIFICATION';
+  lastActivity: string;
 }
 
 export interface Institution {
@@ -112,6 +114,7 @@ export interface Complaint {
   complainantName: string;
   complainantType: 'STUDENT' | 'FACULTY' | 'PARENT' | 'ANONYMOUS' | 'CITIZEN';
   createdAt: string;
+  resolvedAt?: string;
   targetDeadline: string;
   isOverdue: boolean;
   overlapCount: number;
@@ -141,8 +144,21 @@ export interface AuditLogItem {
   actorName: string;
   actorRole: UserRole;
   actorBureau?: string;
-  actionType: 'STATUS_CHANGE' | 'BUREAU_TRANSFER' | 'OVERLAP_LINK' | 'NOTE_ADDED' | 'DEADLINE_OVERRIDE' | 'COORDINATION_INITIATED';
-  entityType: 'COMPLAINT' | 'COORDINATION_GROUP' | 'DEADLINE_RULE';
+  actionType: 
+    | 'STATUS_CHANGE' 
+    | 'BUREAU_TRANSFER' 
+    | 'OVERLAP_LINK' 
+    | 'NOTE_ADDED' 
+    | 'DEADLINE_OVERRIDE' 
+    | 'COORDINATION_INITIATED'
+    | 'RULE_CREATED'
+    | 'RULE_UPDATED'
+    | 'RULE_TOGGLED'
+    | 'RULE_DELETED'
+    | 'USER_ROLE_CHANGED'
+    | 'USER_STATUS_CHANGED'
+    | 'USER_CREATED';
+  entityType: 'COMPLAINT' | 'COORDINATION_GROUP' | 'DEADLINE_RULE' | 'USER_ACCOUNT';
   entityId: string;
   summary: string;
   details: {
@@ -154,12 +170,14 @@ export interface AuditLogItem {
 
 export interface DeadlineRule {
   id: string;
+  name: string;
   category: ComplaintCategory;
   categoryName: string;
   defaultDurationDays: number;
   warningThresholdDays: number;
   escalationTarget: string;
   appliesToBureau: BureauType | 'ALL';
+  priority?: ComplaintPriority;
   isActive: boolean;
 }
 

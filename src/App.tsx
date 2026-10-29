@@ -32,7 +32,8 @@ import {
   AuditLogItem, 
   OverlapCandidate,
   CoordinationGroup,
-  BureauType
+  BureauType,
+  DeadlineRule
 } from './types';
 
 import { 
@@ -41,7 +42,8 @@ import {
   SYNTHETIC_INSTITUTIONS,
   SYNTHETIC_OVERLAPS,
   SYNTHETIC_COORDINATION_GROUPS,
-  SYNTHETIC_AUDIT_LOGS
+  SYNTHETIC_AUDIT_LOGS,
+  SYNTHETIC_DEADLINE_RULES
 } from './data/syntheticData';
 
 export default function App() {
@@ -56,6 +58,8 @@ export default function App() {
   const [coordinationGroups, setCoordinationGroups] = useState<CoordinationGroup[]>(SYNTHETIC_COORDINATION_GROUPS);
   const [overlapCandidates, setOverlapCandidates] = useState<OverlapCandidate[]>(SYNTHETIC_OVERLAPS);
   const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>(SYNTHETIC_AUDIT_LOGS);
+  const [deadlineRules, setDeadlineRules] = useState<DeadlineRule[]>(SYNTHETIC_DEADLINE_RULES);
+  const [users, setUsers] = useState<UserPersona[]>(SYNTHETIC_PERSONAS);
 
   // Selected Complaint for Drawer & Modal State
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
@@ -356,7 +360,13 @@ export default function App() {
               />
             )}
 
-            {activeTab === 'analytics' && <AnalyticsView />}
+            {activeTab === 'analytics' && (
+              <AnalyticsView
+                complaints={complaints}
+                currentPersona={currentPersona}
+                onSelectComplaint={setSelectedComplaint}
+              />
+            )}
 
             {activeTab === 'audit' && (
               <AuditTrailView
@@ -366,7 +376,14 @@ export default function App() {
             )}
 
             {activeTab === 'administration' && (
-              <AdministrationView currentPersona={currentPersona} />
+              <AdministrationView
+                currentPersona={currentPersona}
+                deadlineRules={deadlineRules}
+                onUpdateDeadlineRules={setDeadlineRules}
+                users={users}
+                onUpdateUsers={setUsers}
+                onRecordAudit={(item) => setAuditLogs((prev) => [item, ...prev])}
+              />
             )}
           </main>
         </div>
