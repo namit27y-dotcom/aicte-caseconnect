@@ -7,12 +7,16 @@ import {
   Search, 
   ChevronRight,
   ShieldCheck,
-  ExternalLink
+  ExternalLink,
+  ArrowRight
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
+import { StatusBadge } from '../ui/StatusBadge';
+import { PriorityBadge } from '../ui/PriorityBadge';
+import { PageHeader } from '../ui/PageHeader';
 import { Institution, Complaint } from '../../types';
+import { deriveInstitutionMetrics, getNow } from '../../utils/caseMetrics';
 
 interface InstitutionsViewProps {
   institutions: Institution[];
@@ -27,8 +31,12 @@ export const InstitutionsView: React.FC<InstitutionsViewProps> = ({
   onSelectComplaint,
   onFilterComplaintsByInstitution,
 }) => {
-  const [selectedInst, setSelectedInst] = useState<Institution | null>(institutions[0] || null);
+  const [selectedInstId, setSelectedInstId] = useState<string>(institutions[0]?.id || '');
   const [searchFilter, setSearchFilter] = useState('');
+
+  const now = getNow();
+
+  const selectedInst = institutions.find((i) => i.id === selectedInstId) || institutions[0] || null;
 
   const filteredInstitutions = institutions.filter((inst) => {
     if (!searchFilter.trim()) return true;
@@ -36,9 +44,14 @@ export const InstitutionsView: React.FC<InstitutionsViewProps> = ({
     return (
       inst.name.toLowerCase().includes(q) ||
       inst.state.toLowerCase().includes(q) ||
+      inst.district.toLowerCase().includes(q) ||
       inst.aictePermanentId.toLowerCase().includes(q)
     );
   });
+
+  const selectedMetrics = selectedInst
+    ? deriveInstitutionMetrics(selectedInst.id, complaints, now)
+    : { totalComplaints: 0, openComplaints: 0, overdueCount: 0, resolvedCount: 0 };
 
   const institutionComplaints = selectedInst
     ? complaints.filter((c) => c.institutionId === selectedInst.id)
@@ -47,73 +60,70 @@ export const InstitutionsView: React.FC<InstitutionsViewProps> = ({
   return (
     <div className="space-y-5">
       {/* View Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E6E1D8]">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight text-[#1F2421]">
-            Affiliated Technical Institutions Directory
-          </h2>
-          <p className="text-xs text-[#5C6460] mt-0.5">
-            Cross-bureau institutional history, complaint records, and compliance profiles
-          </p>
-        </div>
-
-        <div className="w-full sm:w-72">
-          <input
-            type="text"
-            placeholder="Search institution name, state, ID..."
-            value={searchFilter}
-            onChange={(e) => setSearchFilter(e.target.value)}
-            className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-1.5 text-xs text-[#1F2421] placeholder-[#A0AEC0] focus:outline-none focus:border-[#1B4532]"
-          />
-        </div>
-      </div>
+      <PageHeader
+        title="Affiliated Technical Institutions Directory"
+        subtitle="Cross-bureau institutional history, live complaint records, and compliance profiles"
+        actions={
+          <div className="w-full sm:w-72">
+            <input
+              type="text"
+              placeholder="Search institution name, state, ID..."
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+              className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-1.5 text-xs text-[#1F2421] placeholder-[#A0AEC0] focus:outline-none focus:border-[#1B4532]"
+            />
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column (5 cols): Institution Cards List */}
         <div className="lg:col-span-5 space-y-3 max-h-[750px] overflow-y-auto pr-1">
           {filteredInstitutions.map((inst) => {
             const isSelected = selectedInst?.id === inst.id;
+            // Derive counts strictly from live complaints state
+            const metrics = deriveInstitutionMetrics(inst.id, complaints, now);
 
             return (
               <div
                 key={inst.id}
-                onClick={() => setSelectedInst(inst)}
-                className={`p-4 rounded-md border transition-all cursor-pointer ${
+                onClick={() => setSelectedInstId(inst.id)}
+                className={`p-4 rounded-xl border transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-white border-[#1B4532] ring-1 ring-[#1B4532] shadow-xs'
-                    : 'bg-white border-[#E6E1D8] hover:border-[#C5BCAD]'
+                    ? 'bg-white border-[#1B4532] ring-2 ring-[#1B4532] shadow-sm'
+                    : 'bg-white border-[#E6E1D8] hover:border-[#CBD5E1]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-sm bg-[#F2EFE9] border border-[#E2DDD3] flex items-center justify-center text-[#1B4532]">
-                      <Building2 size={16} />
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-[#FAF8F5] border border-[#E6E1D8] flex items-center justify-center text-[#1B4532] shrink-0">
+                      <Building2 size={18} />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-[#1F2421] leading-tight">
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-bold text-[#1F2421] leading-tight truncate">
                         {inst.name}
                       </h4>
                       <span className="font-mono text-[10px] text-[#718096]">
-                        AICTE PID: {inst.aictePermanentId}
+                        PID: {inst.aictePermanentId} · Est. {inst.establishedYear}
                       </span>
                     </div>
                   </div>
 
-                  {inst.overdueCount > 0 && (
-                    <span className="text-[10px] font-semibold text-[#9B2226] bg-[#FDF0F0] border border-[#F5C2C4] px-1.5 py-0.5 rounded-xs flex items-center gap-1 shrink-0">
+                  {metrics.overdueCount > 0 && (
+                    <span className="text-[10px] font-bold text-[#DC2626] bg-[#FEF2F2] border border-[#FECACA] px-1.5 py-0.5 rounded-md flex items-center gap-1 shrink-0">
                       <AlertTriangle size={10} />
-                      {inst.overdueCount} Overdue
+                      {metrics.overdueCount} Overdue
                     </span>
                   )}
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-[#F0ECE1] flex items-center justify-between text-[11px] text-[#5C6460]">
+                <div className="mt-3 pt-2.5 border-t border-[#F4F1EA] flex items-center justify-between text-xs text-[#5C6460]">
                   <div className="flex items-center gap-1">
                     <MapPin size={12} className="text-[#846E52]" />
                     <span>{inst.district}, {inst.state}</span>
                   </div>
-                  <div className="font-mono text-[#1F2421]">
-                    <span className="font-bold text-[#1B4532]">{inst.openComplaints}</span> open / {inst.totalComplaints} total
+                  <div className="font-mono text-xs">
+                    <span className="font-bold text-[#1B4532]">{metrics.openComplaints}</span> open / {metrics.totalComplaints} total
                   </div>
                 </div>
               </div>
@@ -124,103 +134,108 @@ export const InstitutionsView: React.FC<InstitutionsViewProps> = ({
         {/* Right Column (7 cols): Selected Institution Detailed Profile */}
         <div className="lg:col-span-7">
           {selectedInst ? (
-            <Card>
-              <CardHeader
-                title={
-                  <div className="flex items-center gap-2">
-                    <span>{selectedInst.name}</span>
-                  </div>
-                }
-                subtitle={`Established ${selectedInst.establishedYear} · Category: ${selectedInst.category}`}
-                action={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onFilterComplaintsByInstitution(selectedInst.id)}
-                  >
-                    View All in Register
-                  </Button>
-                }
-              />
-              <CardContent>
-                {/* Institutional KPI Strip */}
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                  <div className="p-3 bg-[#FAF8F5] border border-[#EBE6DC] rounded-sm text-center">
-                    <span className="text-[10px] text-[#718096] uppercase font-semibold">Total Complaints</span>
-                    <p className="text-xl font-bold font-mono text-[#1F2421] mt-0.5 tabular-nums">
-                      {selectedInst.totalComplaints}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-sm text-center">
-                    <span className="text-[10px] text-[#1D4ED8] uppercase font-semibold">Active Open Cases</span>
-                    <p className="text-xl font-bold font-mono text-[#1D4ED8] mt-0.5 tabular-nums">
-                      {selectedInst.openComplaints}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-[#FDF0F0] border border-[#F5C2C4] rounded-sm text-center">
-                    <span className="text-[10px] text-[#9B2226] uppercase font-semibold">SLA Overdue</span>
-                    <p className="text-xl font-bold font-mono text-[#9B2226] mt-0.5 tabular-nums">
-                      {selectedInst.overdueCount}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Bureaus Handling Cases */}
-                <div className="mb-6 p-3 bg-[#FAF8F5] border border-[#EBE6DC] rounded-sm">
-                  <span className="text-xs font-semibold text-[#1F2421] block mb-2">
-                    Involved AICTE Bureaus
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedInst.bureausInvolved.map((b, idx) => (
-                      <Badge key={idx} variant="forest">
-                        {b.replace(/_/g, ' ')}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Complaints History Table */}
+            <div className="bg-white border border-[#E6E1D8] rounded-xl p-6 shadow-2xs space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-[#F4F1EA]">
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#4A5568] mb-3">
-                    Complaints Associated with this Institution ({institutionComplaints.length})
-                  </h4>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#1B4532]">
+                      PID: {selectedInst.aictePermanentId}
+                    </span>
+                    <span className="text-[10.5px] bg-[#FAF8F5] text-[#5C6460] px-2 py-0.5 rounded border border-[#E6E1D8]">
+                      {selectedInst.category}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-[#1F2421] mt-1">
+                    {selectedInst.name}
+                  </h3>
+                  <p className="text-xs text-[#5C6460] mt-0.5">
+                    {selectedInst.district}, {selectedInst.state} · Established {selectedInst.establishedYear}
+                  </p>
+                </div>
 
-                  {institutionComplaints.length === 0 ? (
-                    <p className="text-xs text-[#718096] py-4 text-center bg-[#FAF8F5] rounded-sm">
-                      No complaints currently logged for this institution.
-                    </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {institutionComplaints.map((c) => (
-                        <div
-                          key={c.id}
-                          onClick={() => onSelectComplaint(c)}
-                          className="p-3 border border-[#E6E1D8] rounded-sm hover:border-[#1B4532] transition-colors cursor-pointer flex items-center justify-between text-xs"
-                        >
-                          <div className="space-y-0.5 max-w-md">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono font-semibold text-[#1B4532]">
-                                {c.trackingNumber}
-                              </span>
-                              <Badge status={c.status}>{c.status.replace('_', ' ')}</Badge>
-                              <Badge priority={c.priority}>{c.priority}</Badge>
-                            </div>
-                            <p className="text-[#1F2421] font-medium truncate">{c.title}</p>
-                            <span className="text-[10px] text-[#718096]">
-                              Bureau: {c.bureauName} · Filed {c.createdAt.slice(0, 10)}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onFilterComplaintsByInstitution(selectedInst.id)}
+                  icon={<ExternalLink size={13} />}
+                >
+                  Filter in Register ({selectedMetrics.totalComplaints})
+                </Button>
+              </div>
+
+              {/* Institution derived metrics strip */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-3 bg-[#FAF8F5] border border-[#E6E1D8] rounded-lg text-center">
+                  <span className="text-[10px] text-[#718096] uppercase font-semibold block">
+                    Total Ingestion
+                  </span>
+                  <span className="text-xl font-bold font-sans text-[#1F2421] mt-0.5 block">
+                    {selectedMetrics.totalComplaints}
+                  </span>
+                </div>
+                <div className="p-3 bg-[#F0F9FF] border border-[#BAE6FD] rounded-lg text-center">
+                  <span className="text-[10px] text-[#0369A1] uppercase font-semibold block">
+                    Active Open
+                  </span>
+                  <span className="text-xl font-bold font-sans text-[#0284C7] mt-0.5 block">
+                    {selectedMetrics.openComplaints}
+                  </span>
+                </div>
+                <div className="p-3 bg-[#FFFBFB] border border-[#FECACA] rounded-lg text-center">
+                  <span className="text-[10px] text-[#DC2626] uppercase font-semibold block">
+                    Overdue Cases
+                  </span>
+                  <span className="text-xl font-bold font-sans text-[#DC2626] mt-0.5 block">
+                    {selectedMetrics.overdueCount}
+                  </span>
+                </div>
+              </div>
+
+              {/* Related Complaints List */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#4A5568] mb-3">
+                  Institution Grievance History ({institutionComplaints.length})
+                </h4>
+
+                {institutionComplaints.length === 0 ? (
+                  <div className="p-6 bg-[#FAF8F5] rounded-lg border border-[#E6E1D8] text-center text-xs text-[#718096]">
+                    No grievance records on file for this institution.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-[#F4F1EA] border border-[#E6E1D8] rounded-lg overflow-hidden">
+                    {institutionComplaints.map((c) => (
+                      <div
+                        key={c.id}
+                        onClick={() => onSelectComplaint(c)}
+                        className="p-3 bg-white hover:bg-[#FAF8F5] transition-colors cursor-pointer flex items-center justify-between gap-3 group"
+                      >
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-[#1B4532]">
+                              {c.trackingNumber}
+                            </span>
+                            <span className="text-xs font-semibold text-[#1F2421] truncate group-hover:text-[#1B4532]">
+                              {c.title}
                             </span>
                           </div>
-                          <ChevronRight size={16} className="text-[#718096] shrink-0" />
+                          <span className="text-[10.5px] text-[#718096] block mt-0.5">
+                            {c.bureauName} · Filed {c.createdAt.slice(0, 10)}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <StatusBadge status={c.status} size="sm" />
+                          <ChevronRight size={14} className="text-[#718096] group-hover:text-[#1B4532]" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           ) : (
-            <div className="p-8 text-center bg-white border border-[#E6E1D8] rounded-md text-[#718096]">
-              Select an institution from the list to view compliance record.
+            <div className="p-12 text-center text-xs text-[#718096] bg-white border border-[#E6E1D8] rounded-xl">
+              Select an institution from the directory to inspect records.
             </div>
           )}
         </div>

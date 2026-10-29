@@ -6,7 +6,8 @@
  * Formulas are transparently documented and resilient to empty/missing date values.
  */
 
-import { Complaint, BureauType, ComplaintCategory, ComplaintStatus } from '../types';
+import { Complaint, BureauType, ComplaintCategory } from '../types';
+import { getNow, isComplaintOverdue } from './caseMetrics';
 
 export interface AnalyticsKPIs {
   total: number;
@@ -68,6 +69,7 @@ export const TRACKED_BUREAUS: { key: BureauType; label: string }[] = [
   { key: 'GRIEVANCE_CELL', label: 'Public Grievance Cell' },
   { key: 'POLICY_ACADEMIC', label: 'Policy & Academic Bureau' },
   { key: 'LEGAL_CELL', label: 'Legal & Vigilance Cell' },
+  { key: 'RAGGING_PREVENTION', label: 'Anti-Ragging Bureau' },
 ];
 
 /**
@@ -87,8 +89,9 @@ export function calculateKPIs(complaints: Complaint[]): AnalyticsKPIs {
     };
   }
 
+  const now = getNow();
   const open = complaints.filter(c => c.status !== 'CLOSED').length;
-  const overdue = complaints.filter(c => c.isOverdue || c.status === 'OVERDUE').length;
+  const overdue = complaints.filter(c => isComplaintOverdue(c, now)).length;
   const disposed = complaints.filter(c => c.status === 'CLOSED').length;
   const disposalRate = total > 0 ? Math.round((disposed / total) * 1000) / 10 : 0;
 
@@ -136,12 +139,13 @@ export function calculateKPIs(complaints: Complaint[]): AnalyticsKPIs {
  */
 export function calculateBureauWorkload(complaints: Complaint[]): BureauWorkloadMetric[] {
   const totalOpenOverall = complaints.filter(c => c.status !== 'CLOSED').length;
+  const now = getNow();
 
   return TRACKED_BUREAUS.map(b => {
     const bureauComplaints = complaints.filter(c => c.bureau === b.key);
     const totalAssigned = bureauComplaints.length;
     const openCount = bureauComplaints.filter(c => c.status !== 'CLOSED').length;
-    const overdueCount = bureauComplaints.filter(c => c.isOverdue || c.status === 'OVERDUE').length;
+    const overdueCount = bureauComplaints.filter(c => isComplaintOverdue(c, now)).length;
     const disposedCount = bureauComplaints.filter(c => c.status === 'CLOSED').length;
     const shareOfOpen = totalOpenOverall > 0 
       ? Math.round((openCount / totalOpenOverall) * 100) 
@@ -164,6 +168,7 @@ export function calculateBureauWorkload(complaints: Complaint[]): BureauWorkload
  */
 export function calculateStateDistribution(complaints: Complaint[]): StateComplaintMetric[] {
   if (complaints.length === 0) return [];
+  const now = getNow();
 
   const stateMap = new Map<string, { total: number; open: number; disposed: number; overdue: number }>();
 
@@ -175,7 +180,7 @@ export function calculateStateDistribution(complaints: Complaint[]): StateCompla
       entry.disposed += 1;
     } else {
       entry.open += 1;
-      if (c.isOverdue || c.status === 'OVERDUE') entry.overdue += 1;
+      if (isComplaintOverdue(c, now)) entry.overdue += 1;
     }
     stateMap.set(state, entry);
   });
@@ -202,10 +207,9 @@ export function calculateStateDistribution(complaints: Complaint[]): StateCompla
  * Calculate age buckets for active/open complaints
  */
 export function calculateAgingBuckets(
-  complaints: Complaint[],
-  referenceDateStr = '2026-10-29T11:42:00Z'
+  complaints: Complaint[]
 ): AgingBucketMetric[] {
-  const refTime = new Date(referenceDateStr).getTime();
+  const refTime = getNow().getTime();
   const openComplaints = complaints.filter(c => c.status !== 'CLOSED');
   const totalOpen = openComplaints.length;
 
@@ -266,31 +270,35 @@ export function calculateCategoryDistribution(complaints: Complaint[]): Category
 }
 
 /**
- * Calculate monthly trends across recent months
+ * Calculate monthly trends across distinct periods present in the complaint dataset
  */
 export function calculateMonthlyTrends(complaints: Complaint[]): MonthlyTrendMetric[] {
-  // Target 5 monthly windows (Jun - Oct 2026)
-  const months = [
-    { key: '2026-06', label: 'Jun 2026' },
-    { key: '2026-07', label: 'Jul 2026' },
-    { key: '2026-08', label: 'Aug 2026' },
-    { key: '2026-09', label: 'Sep 2026' },
-    { key: '2026-10', label: 'Oct 2026' },
-  ];
+  if (complaints.length === 0) return [];
 
-  return months.map(m => {
-    const intakeCount = complaints.filter(c => c.createdAt && c.createdAt.startsWith(m.key)).length;
+  const monthSet = new Set<string>();
+  complaints.forEach(c => {
+    if (c.createdAt) monthSet.add(c.createdAt.slice(0, 7));
+    if (c.resolvedAt) monthSet.add(c.resolvedAt.slice(0, 7));
+  });
+
+  const sortedMonths = Array.from(monthSet).sort();
+  if (sortedMonths.length === 0) return [];
+
+  return sortedMonths.map(key => {
+    const dateObj = new Date(`${key}-01T00:00:00Z`);
+    const monthLabel = dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+    const intakeCount = complaints.filter(c => c.createdAt && c.createdAt.startsWith(key)).length;
     const disposedCount = complaints.filter(
       c => c.status === 'CLOSED' && (
-        (c.resolvedAt && c.resolvedAt.startsWith(m.key)) ||
-        c.events.some(e => e.action.includes('DISPOSED') && e.timestamp.startsWith(m.key)) ||
-        (c.createdAt && c.createdAt.startsWith(m.key))
+        (c.resolvedAt && c.resolvedAt.startsWith(key)) ||
+        c.events.some(e => e.action.includes('DISPOSED') && e.timestamp.startsWith(key))
       )
     ).length;
 
     return {
-      monthKey: m.key,
-      monthLabel: m.label,
+      monthKey: key,
+      monthLabel,
       intakeCount,
       disposedCount,
     };
@@ -298,47 +306,60 @@ export function calculateMonthlyTrends(complaints: Complaint[]): MonthlyTrendMet
 }
 
 /**
- * Generate and trigger download of Analytics CSV
+ * Export safe RFC 4180 CSV with cell formula injection neutralization
  */
 export function exportAnalyticsToCSV(
   complaints: Complaint[],
   activeFilterSummary: string
 ) {
   const kpis = calculateKPIs(complaints);
+  const now = getNow();
+
+  const sanitizeCell = (val: string | number | undefined | null): string => {
+    if (val === undefined || val === null) return '""';
+    let str = String(val);
+    if (/^[=+\-@]/.test(str)) {
+      str = "'" + str;
+    }
+    return `"${str.replace(/"/g, '""')}"`;
+  };
 
   const headerSummaryLines = [
-    '# AICTE CaseConnect Analytics Report (SIH26264)',
-    `# Generated At: ${new Date().toISOString()}`,
-    `# Active Filter Scope: ${activeFilterSummary}`,
-    `# Total Cases: ${kpis.total}`,
-    `# Open Cases: ${kpis.open}`,
-    `# Overdue Cases: ${kpis.overdue}`,
-    `# Disposed Cases: ${kpis.disposed}`,
-    `# Disposal Rate: ${kpis.disposalRate}%`,
-    `# Average Resolution Duration: ${kpis.avgResolutionDays ? `${kpis.avgResolutionDays} days` : 'N/A'}`,
-    '',
-    'Tracking Number,Institution Name,State,Category,Bureau,Status,Priority,Created Date,Target Deadline,Overdue Flag,Cross-Bureau Overlap'
+    `"AICTE CaseConnect Analytics Report (SIH26264)"`,
+    `"Generated At: ${now.toISOString()}"`,
+    `"Active Filter Scope: ${activeFilterSummary}"`,
+    `"Total Cases: ${kpis.total}"`,
+    `"Open Cases: ${kpis.open}"`,
+    `"Overdue Cases: ${kpis.overdue}"`,
+    `"Disposed Cases: ${kpis.disposed}"`,
+    `"Disposal Rate: ${kpis.disposalRate}%"`,
+    `"Average Resolution Duration: ${kpis.avgResolutionDays ? `${kpis.avgResolutionDays} days` : 'N/A'}"`,
+    '""',
+    '"Tracking Number","Institution Name","State","Category","Bureau","Status","Priority","Created Date","Target Deadline","Overdue Flag","Cross-Bureau Overlap"',
   ];
 
   const dataRows = complaints.map(c => [
-    c.trackingNumber,
-    `"${(c.institutionName || '').replace(/"/g, '""')}"`,
-    `"${(c.institutionState || '').replace(/"/g, '""')}"`,
-    `"${(c.categoryLabel || c.category).replace(/"/g, '""')}"`,
-    `"${(c.bureauName || c.bureau).replace(/"/g, '""')}"`,
-    c.status,
-    c.priority,
-    c.createdAt ? c.createdAt.slice(0, 10) : 'N/A',
-    c.targetDeadline ? c.targetDeadline.slice(0, 10) : 'N/A',
-    c.isOverdue ? 'YES' : 'NO',
-    c.overlapCount > 0 ? `YES (${c.overlapCount})` : 'NO'
+    sanitizeCell(c.trackingNumber),
+    sanitizeCell(c.institutionName),
+    sanitizeCell(c.institutionState),
+    sanitizeCell(c.categoryLabel || c.category),
+    sanitizeCell(c.bureauName || c.bureau),
+    sanitizeCell(c.status),
+    sanitizeCell(c.priority),
+    sanitizeCell(c.createdAt ? c.createdAt.slice(0, 10) : 'N/A'),
+    sanitizeCell(c.targetDeadline ? c.targetDeadline.slice(0, 10) : 'N/A'),
+    sanitizeCell(isComplaintOverdue(c, now) ? 'YES' : 'NO'),
+    sanitizeCell(c.overlapCount > 0 ? `YES (${c.overlapCount})` : 'NO'),
   ].join(','));
 
-  const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent([...headerSummaryLines, ...dataRows].join('\n'));
+  const csvContent = [...headerSummaryLines, ...dataRows].join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
   const downloadAnchor = document.createElement('a');
-  downloadAnchor.setAttribute('href', csvContent);
-  downloadAnchor.setAttribute('download', `aicte_caseconnect_analytics_${new Date().toISOString().slice(0, 10)}.csv`);
+  downloadAnchor.href = url;
+  downloadAnchor.download = `aicte_caseconnect_analytics_${now.toISOString().slice(0, 10)}.csv`;
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   document.body.removeChild(downloadAnchor);
+  URL.revokeObjectURL(url);
 }

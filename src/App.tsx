@@ -7,13 +7,13 @@
  * Team: VECTOR_VAGABONDS
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { TopBar } from './components/layout/TopBar';
 import { SyntheticBanner } from './components/layout/SyntheticBanner';
 
 import { DashboardView } from './components/views/DashboardView';
-import { ComplaintsView } from './components/views/ComplaintsView';
+import { ComplaintsView, ComplaintFilterState } from './components/views/ComplaintsView';
 import { InstitutionsView } from './components/views/InstitutionsView';
 import { CoordinationView } from './components/views/CoordinationView';
 import { DeadlineQueueView } from './components/views/DeadlineQueueView';
@@ -46,12 +46,29 @@ import {
   SYNTHETIC_DEADLINE_RULES
 } from './data/syntheticData';
 
+import { 
+  getNow, 
+  deriveSidebarBadges, 
+  deriveNotifications, 
+  DerivedNotification 
+} from './utils/caseMetrics';
+import { can, isComplaintVisibleToPersona } from './utils/permissions';
+import { validateTransition } from './utils/workflow';
+
 export default function App() {
   // Navigation & Role State
   const [activeTab, setActiveTab] = useState<NavigationTab>('overview');
   const [currentPersona, setCurrentPersona] = useState<UserPersona>(SYNTHETIC_PERSONAS[0]); // Aashish Kumar (Bureau Officer)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+
+  // Lifted Complaint Filters State
+  const [complaintFilter, setComplaintFilter] = useState<ComplaintFilterState>({
+    status: 'ALL',
+    bureau: 'ALL',
+    priority: 'ALL',
+    institutionId: undefined,
+    search: '',
+  });
 
   // Domain Synthetic State
   const [complaints, setComplaints] = useState<Complaint[]>(SYNTHETIC_COMPLAINTS);
@@ -65,16 +82,64 @@ export default function App() {
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
   const [isNewComplaintOpen, setIsNewComplaintOpen] = useState(false);
 
-  // Status Change Handler with Immutable Audit Logging (Section 7 Rule 7)
+  // Notifications read tracking state
+  const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(new Set());
+
+  const now = getNow();
+
+  // Role-scoped complaints: Complainant sees only their own complaints
+  const visibleComplaints = useMemo(() => {
+    return complaints.filter((c) => isComplaintVisibleToPersona(c, currentPersona));
+  }, [complaints, currentPersona]);
+
+  // Derived sidebar badge counts
+  const sidebarBadges = useMemo(() => {
+    return deriveSidebarBadges(visibleComplaints, overlapCandidates, deadlineRules, now);
+  }, [visibleComplaints, overlapCandidates, deadlineRules, now]);
+
+  // Derived notification list
+  const notifications = useMemo(() => {
+    return deriveNotifications(visibleComplaints, overlapCandidates, now);
+  }, [visibleComplaints, overlapCandidates, now]);
+
+  const handleMarkAllNotificationsRead = () => {
+    setReadNotificationIds(new Set(notifications.map((n) => n.id)));
+  };
+
+  const handleNotificationClick = (notif: DerivedNotification) => {
+    setReadNotificationIds((prev) => new Set([...prev, notif.id]));
+    setActiveTab(notif.targetTab);
+    if (notif.complaintId) {
+      const match = complaints.find((c) => c.id === notif.complaintId);
+      if (match) setSelectedComplaint(match);
+    }
+  };
+
+  // Status Change Handler with Immutable Audit Logging and Permissions Enforcement
   const handleStatusChange = (complaintId: string, newStatus: ComplaintStatus, reason: string) => {
-    let targetTracking = '';
-    let oldStatusVal = '';
+    const targetComp = complaints.find((c) => c.id === complaintId);
+    if (!targetComp) return;
+
+    // Strict Permissions Check
+    const permission = can(currentPersona, 'CHANGE_STATUS', { complaint: targetComp });
+    if (!permission.allowed) {
+      alert(`Action rejected: ${permission.reason}`);
+      return;
+    }
+
+    // Strict Workflow Transition Check
+    const validation = validateTransition(targetComp.status, newStatus, reason);
+    if (!validation.valid) {
+      alert(`Workflow transition rejected: ${validation.error}`);
+      return;
+    }
+
+    let targetTracking = targetComp.trackingNumber;
+    let oldStatusVal = targetComp.status;
 
     setComplaints((prev) =>
       prev.map((c) => {
         if (c.id === complaintId) {
-          targetTracking = c.trackingNumber;
-          oldStatusVal = c.status;
           const newEvent = {
             id: `ev-${Date.now()}`,
             complaintId: c.id,
@@ -87,7 +152,7 @@ export default function App() {
           return {
             ...c,
             status: newStatus,
-            isOverdue: newStatus === 'CLOSED' ? false : c.isOverdue,
+            resolvedAt: newStatus === 'CLOSED' ? new Date().toISOString() : c.resolvedAt,
             events: [newEvent, ...c.events],
           };
         }
@@ -122,21 +187,45 @@ export default function App() {
           ? {
               ...prev,
               status: newStatus,
-              isOverdue: newStatus === 'CLOSED' ? false : prev.isOverdue,
+              resolvedAt: newStatus === 'CLOSED' ? new Date().toISOString() : prev.resolvedAt,
             }
           : null
       );
     }
   };
 
-  // Create Complaint Handler with Audit Logging
+  // Create Complaint Handler with Unique Sequential Tracking IDs
   const handleCreateComplaint = (data: Partial<Complaint>) => {
-    const nextSeq = 156 + complaints.length;
-    const trackingNumber = `CC-2026-000${nextSeq}`;
-    const now = new Date();
-    const deadlineDate = new Date();
-    // Default 30-day SLA
-    deadlineDate.setDate(now.getDate() + 30);
+    const permission = can(currentPersona, 'CREATE_COMPLAINT');
+    if (!permission.allowed) {
+      alert(`Action rejected: ${permission.reason}`);
+      return;
+    }
+
+    // Calculate next sequential tracking number without collision
+    let maxNumber = 123;
+    for (const c of complaints) {
+      const match = c.trackingNumber.match(/CC-2026-(\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (!isNaN(num) && num > maxNumber) {
+          maxNumber = num;
+        }
+      }
+    }
+    const trackingNumber = `CC-2026-${String(maxNumber + 1).padStart(6, '0')}`;
+
+    const nowTime = getNow();
+
+    // Default SLA from active rules or fall back to 30 days
+    let slaDays = 30;
+    if (data.category) {
+      const activeRule = deadlineRules.find(
+        (r) => r.isActive && r.category === data.category
+      );
+      if (activeRule) slaDays = activeRule.defaultDurationDays;
+    }
+    const deadlineDate = new Date(nowTime.getTime() + slaDays * 24 * 60 * 60 * 1000);
 
     const newComp: Complaint = {
       id: `comp-${Date.now()}`,
@@ -154,9 +243,9 @@ export default function App() {
       bureauName: currentPersona.bureauName || 'Approval Bureau',
       assignedOfficerName: currentPersona.name,
       assignedOfficerId: currentPersona.id,
-      complainantName: data.complainantName || 'Citizen Complainant',
+      complainantName: data.complainantName || currentPersona.name,
       complainantType: data.complainantType || 'STUDENT',
-      createdAt: now.toISOString(),
+      createdAt: nowTime.toISOString(),
       targetDeadline: deadlineDate.toISOString(),
       isOverdue: false,
       overlapCount: 0,
@@ -167,7 +256,7 @@ export default function App() {
           action: 'INTAKE_LOGGED',
           actor: currentPersona.name,
           actorRole: currentPersona.role,
-          timestamp: now.toISOString(),
+          timestamp: nowTime.toISOString(),
           description: `Grievance registered and assigned initial tracking number ${trackingNumber}.`,
         },
       ],
@@ -178,7 +267,7 @@ export default function App() {
     // Record audit event
     const newAuditItem: AuditLogItem = {
       id: `audit-${Date.now()}`,
-      timestamp: now.toISOString(),
+      timestamp: nowTime.toISOString(),
       actorName: currentPersona.name,
       actorRole: currentPersona.role,
       actorBureau: currentPersona.bureauName,
@@ -199,6 +288,12 @@ export default function App() {
 
   // Overlap confirmation
   const handleConfirmOverlap = (overlapId: string) => {
+    const permission = can(currentPersona, 'REVIEW_OVERLAP');
+    if (!permission.allowed) {
+      alert(`Action rejected: ${permission.reason}`);
+      return;
+    }
+
     setOverlapCandidates((prev) =>
       prev.map((o) => (o.id === overlapId ? { ...o, reviewStatus: 'CONFIRMED_RELATED' } : o))
     );
@@ -226,6 +321,12 @@ export default function App() {
 
   // Overlap dismissal
   const handleDismissOverlap = (overlapId: string) => {
+    const permission = can(currentPersona, 'REVIEW_OVERLAP');
+    if (!permission.allowed) {
+      alert(`Action rejected: ${permission.reason}`);
+      return;
+    }
+
     setOverlapCandidates((prev) =>
       prev.map((o) => (o.id === overlapId ? { ...o, reviewStatus: 'DISMISSED_INDEPENDENT' } : o))
     );
@@ -253,6 +354,23 @@ export default function App() {
 
   // Escalation notice trigger
   const handleTriggerEscalation = (trackingNumber: string) => {
+    const targetComp = complaints.find((c) => c.trackingNumber === trackingNumber);
+    if (!targetComp) return;
+
+    const alreadyEscalated = auditLogs.some(
+      (a) => a.entityId === trackingNumber && a.actionType === 'DEADLINE_OVERRIDE'
+    );
+
+    const permission = can(currentPersona, 'TRIGGER_ESCALATION', {
+      complaint: targetComp,
+      alreadyEscalated,
+    });
+
+    if (!permission.allowed) {
+      alert(`Action rejected: ${permission.reason}`);
+      return;
+    }
+
     const newAuditItem: AuditLogItem = {
       id: `audit-${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -274,66 +392,100 @@ export default function App() {
 
   // Jump from Institution to Complaints with filtered view
   const handleFilterComplaintsByInstitution = (instId: string) => {
-    const inst = SYNTHETIC_INSTITUTIONS.find((i) => i.id === instId);
-    if (inst) {
-      setSearchQuery(inst.name);
-      setActiveTab('complaints');
-    }
+    setComplaintFilter({
+      status: 'ALL',
+      bureau: 'ALL',
+      priority: 'ALL',
+      institutionId: instId,
+      search: '',
+    });
+    setActiveTab('complaints');
+  };
+
+  const handleFilterFromDashboard = (filter: { status?: string; bureau?: string }) => {
+    setComplaintFilter((prev) => ({
+      ...prev,
+      status: filter.status !== undefined ? filter.status : prev.status,
+      bureau: filter.bureau !== undefined ? filter.bureau : prev.bureau,
+    }));
+  };
+
+  const handleResetComplaintFilters = () => {
+    setComplaintFilter({
+      status: 'ALL',
+      bureau: 'ALL',
+      priority: 'ALL',
+      institutionId: undefined,
+      search: '',
+    });
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] text-[#0F172A] flex flex-col font-sans antialiased">
+    <div className="min-h-screen bg-[#FAF8F5] text-[#0F172A] flex flex-col font-sans antialiased">
       <div className="flex-1 flex">
         {/* Responsive Sidebar Navigation - Exactly 295px wide */}
         <Sidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
           currentPersona={currentPersona}
-          onPersonaChange={setCurrentPersona}
+          badges={sidebarBadges}
           mobileOpen={mobileSidebarOpen}
           onMobileClose={() => setMobileSidebarOpen(false)}
         />
 
         {/* Main Workspace Area with exact 295px left padding for sidebar */}
-        <div className="flex-1 flex flex-col min-w-0 lg:pl-[295px] bg-[#FBF9F5] transition-all">
-          {/* Top Bar Header */}
+        <div className="flex-1 flex flex-col min-w-0 lg:pl-[295px] bg-[#FAF8F5] transition-all">
+          {/* Top Bar Header with Unified Role Switcher and Search */}
           <TopBar
             activeTab={activeTab}
             currentPersona={currentPersona}
+            complaints={visibleComplaints}
+            notifications={notifications}
+            readNotificationIds={readNotificationIds}
+            onMarkAllNotificationsRead={handleMarkAllNotificationsRead}
+            onNotificationClick={handleNotificationClick}
             onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
             onOpenNewComplaint={() => setIsNewComplaintOpen(true)}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
+            searchQuery={complaintFilter.search}
+            onSearchChange={(q) => setComplaintFilter((prev) => ({ ...prev, search: q }))}
             onPersonaChange={setCurrentPersona}
+            onSelectComplaint={setSelectedComplaint}
+            onNavigateTab={setActiveTab}
           />
 
-          {/* Synthetic Demo Data Isolation Banner directly beneath TopBar */}
+          {/* Synthetic Demo Data Isolation Banner */}
           <SyntheticBanner />
 
           {/* Page Body Viewport */}
-          <main className="flex-1 p-5 sm:p-7 max-w-[1668px] w-full mx-auto">
+          <main className="flex-1 p-4 sm:p-6 lg:p-7 max-w-[1668px] w-full mx-auto">
             {activeTab === 'overview' && (
               <DashboardView
                 currentPersona={currentPersona}
+                complaints={visibleComplaints}
+                deadlineRules={deadlineRules}
+                overlapCandidates={overlapCandidates}
                 onSelectComplaint={setSelectedComplaint}
                 onNavigateTab={setActiveTab}
+                onFilterComplaints={handleFilterFromDashboard}
               />
             )}
 
             {activeTab === 'complaints' && (
               <ComplaintsView
-                complaints={complaints}
+                complaints={visibleComplaints}
                 currentPersona={currentPersona}
+                filterState={complaintFilter}
+                onUpdateFilter={(p) => setComplaintFilter((prev) => ({ ...prev, ...p }))}
+                onResetFilters={handleResetComplaintFilters}
                 onSelectComplaint={setSelectedComplaint}
                 onOpenNewComplaint={() => setIsNewComplaintOpen(true)}
-                searchQuery={searchQuery}
               />
             )}
 
             {activeTab === 'institutions' && (
               <InstitutionsView
                 institutions={SYNTHETIC_INSTITUTIONS}
-                complaints={complaints}
+                complaints={visibleComplaints}
                 onSelectComplaint={setSelectedComplaint}
                 onFilterComplaintsByInstitution={handleFilterComplaintsByInstitution}
               />
@@ -343,7 +495,7 @@ export default function App() {
               <CoordinationView
                 coordinationGroups={coordinationGroups}
                 overlapCandidates={overlapCandidates}
-                complaints={complaints}
+                complaints={visibleComplaints}
                 currentPersona={currentPersona}
                 onSelectComplaint={setSelectedComplaint}
                 onConfirmOverlap={handleConfirmOverlap}
@@ -353,7 +505,8 @@ export default function App() {
 
             {activeTab === 'deadlines' && (
               <DeadlineQueueView
-                complaints={complaints}
+                complaints={visibleComplaints}
+                deadlineRules={deadlineRules}
                 currentPersona={currentPersona}
                 onSelectComplaint={setSelectedComplaint}
                 onTriggerEscalation={handleTriggerEscalation}
@@ -362,7 +515,7 @@ export default function App() {
 
             {activeTab === 'analytics' && (
               <AnalyticsView
-                complaints={complaints}
+                complaints={visibleComplaints}
                 currentPersona={currentPersona}
                 onSelectComplaint={setSelectedComplaint}
               />
@@ -371,7 +524,7 @@ export default function App() {
             {activeTab === 'audit' && (
               <AuditTrailView
                 auditLogs={auditLogs}
-                searchQuery={searchQuery}
+                searchQuery={complaintFilter.search}
               />
             )}
 
@@ -389,7 +542,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Case Details Drawer */}
+      {/* Case Details Drawer with State Machine Transition Controls */}
       <ComplaintDetailDrawer
         complaint={selectedComplaint}
         onClose={() => setSelectedComplaint(null)}

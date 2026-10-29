@@ -22,13 +22,16 @@ import {
   Shield,
   HelpCircle,
   Sliders,
-  ChevronDown
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Modal } from '../ui/Modal';
 import { Input } from '../ui/Input';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { can } from '../../utils/permissions';
 import { 
   UserPersona, 
   DeadlineRule, 
@@ -58,7 +61,10 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   onRecordAudit,
 }) => {
   // Navigation sub-tabs within Administration
-  const [activeAdminTab, setActiveAdminTab] = useState<'RBAC' | 'SLA_RULES' | 'USER_MANAGEMENT'>('RBAC');
+  const [activeAdminTab, setActiveAdminTab] = useState<'USER_MANAGEMENT' | 'RBAC' | 'SLA_RULES'>('USER_MANAGEMENT');
+  const [permissionsExpanded, setPermissionsExpanded] = useState(false);
+  const [ruleToDelete, setRuleToDelete] = useState<DeadlineRule | null>(null);
+  const [showResetRulesConfirm, setShowResetRulesConfirm] = useState(false);
 
   // Notification Toast state
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -109,7 +115,37 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
   // Guard for non-admin viewers
   if (isComplainant) {
+    const adminAccess = can(currentPersona, 'VIEW_ADMIN');
+  if (!adminAccess.allowed) {
     return (
+      <div className="space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E6E1D8]">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-[#0F172A]">
+              System Administration & Governance
+            </h2>
+            <p className="text-xs text-[#64748B] mt-0.5">
+              Restricted institutional settings and governance policies
+            </p>
+          </div>
+        </div>
+        <div className="p-8 bg-white border border-[#FECACA] rounded-xl text-center max-w-lg mx-auto shadow-sm">
+          <div className="w-12 h-12 rounded-full bg-[#FEF2F2] flex items-center justify-center text-[#DC2626] mx-auto mb-3">
+            <Lock size={22} />
+          </div>
+          <h3 className="text-base font-bold text-[#1F2421]">Administrative Access Restricted</h3>
+          <p className="text-xs text-[#5C6460] mt-1.5 leading-relaxed">
+            {adminAccess.reason}
+          </p>
+          <span className="text-[11px] text-[#718096] block mt-3 font-mono">
+            Current Persona: {currentPersona.name} ({currentPersona.roleLabel})
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
       <div className="p-8 max-w-xl mx-auto text-center space-y-4 bg-white border border-[#E6E1D8] rounded-xl mt-8 shadow-xs">
         <div className="w-12 h-12 rounded-full bg-[#FEE2E2] border border-[#FECACA] text-[#DC2626] flex items-center justify-center mx-auto">
           <Lock size={22} />
@@ -424,12 +460,15 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   };
 
   const handleDeleteRule = (rule: DeadlineRule) => {
-    if (!window.confirm(`Are you sure you want to delete SLA Rule "${rule.name}"?`)) return;
+    setRuleToDelete(rule);
+  };
 
+  const confirmDeleteRule = () => {
+    if (!ruleToDelete) return;
+    const rule = ruleToDelete;
     const updatedRules = deadlineRules.filter((r) => r.id !== rule.id);
     onUpdateDeadlineRules(updatedRules);
 
-    // Audit Log
     onRecordAudit({
       id: `audit-${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -447,13 +486,18 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       },
     });
 
-    showToast(`Rule "${rule.name}" removed.`);
+    setRuleToDelete(null);
+    showToast(`Rule "${rule.name}" removed from in-memory configuration.`);
   };
 
   const handleResetRulesToDefault = () => {
-    if (!window.confirm('Reset all SLA rules to default demo benchmarks?')) return;
+    setShowResetRulesConfirm(true);
+  };
+
+  const confirmResetRules = () => {
     onUpdateDeadlineRules(SYNTHETIC_DEADLINE_RULES);
-    showToast('SLA rules reset to default demo values.');
+    setShowResetRulesConfirm(false);
+    showToast('SLA rules reset to default demo benchmarks.');
   };
 
   // --- USER ADMINISTRATION HANDLERS ---
@@ -651,8 +695,18 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           </p>
         </div>
 
-        {/* Sub-tab navigation */}
+        {/* Sub-tab navigation (Reordered: User Management -> Role Permissions -> SLA Configuration) */}
         <div className="flex items-center gap-1 bg-[#EAE5DC] p-1 rounded-xl text-xs font-medium">
+          <button
+            onClick={() => setActiveAdminTab('USER_MANAGEMENT')}
+            className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              activeAdminTab === 'USER_MANAGEMENT'
+                ? 'bg-white text-[#0F172A] shadow-xs font-semibold'
+                : 'text-[#64748B] hover:text-[#0F172A]'
+            }`}
+          >
+            1. User Directory ({users.length})
+          </button>
           <button
             onClick={() => setActiveAdminTab('RBAC')}
             className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
@@ -661,7 +715,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 : 'text-[#64748B] hover:text-[#0F172A]'
             }`}
           >
-            Permissions Matrix
+            2. Role Permissions
           </button>
           <button
             onClick={() => setActiveAdminTab('SLA_RULES')}
@@ -671,93 +725,136 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 : 'text-[#64748B] hover:text-[#0F172A]'
             }`}
           >
-            SLA Configuration ({deadlineRules.length})
-          </button>
-          <button
-            onClick={() => setActiveAdminTab('USER_MANAGEMENT')}
-            className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-              activeAdminTab === 'USER_MANAGEMENT'
-                ? 'bg-white text-[#0F172A] shadow-xs font-semibold'
-                : 'text-[#64748B] hover:text-[#0F172A]'
-            }`}
-          >
-            User Directory ({users.length})
+            3. SLA Configuration ({deadlineRules.length})
           </button>
         </div>
       </div>
 
-      {/* Demo Mode Security Disclaimer */}
-      <div className="p-3 bg-[#FAF8F5] border border-[#E6E1D8] rounded-lg text-xs text-[#5C6460] flex items-center justify-between">
+      {/* In-Memory Prototype Governance Disclaimer */}
+      <div className="p-3 bg-[#FAF8F5] border border-[#E6E1D8] rounded-lg text-xs text-[#5C6460] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Shield size={15} className="text-[#154636] shrink-0" />
           <span>
-            <strong>PROTOTYPE DEMO MODE:</strong> Authentication and server-enforced authorization are simulated using persona tokens. Configuration edits generate verified audit log records in reactive memory.
+            <strong>IN-MEMORY PROTOTYPE NOTICE:</strong> All edits to users, permissions, and SLA benchmarks modify live in-memory state and log append-only audit events for this session. Changes are not persisted to an external database.
           </span>
         </div>
-        <span className="font-mono text-[11px] text-[#718096]">
-          Actor: {currentPersona.name}
+        <span className="font-mono text-[11px] text-[#718096] shrink-0">
+          Actor: {currentPersona.name} ({currentPersona.roleLabel})
         </span>
       </div>
 
-      {/* TAB 1: ROLE-PERMISSIONS MATRIX */}
+      {/* TAB 2: ROLE-PERMISSIONS (Plain-Language Summary First + Matrix in Expander) */}
       {activeAdminTab === 'RBAC' && (
-        <Card>
-          <CardHeader
-            title={
+        <div className="space-y-4">
+          {/* Plain language role summaries */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-white border border-[#E6E1D8] rounded-xl space-y-1.5 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs text-[#1F2421]">Complainant (Student / Citizen)</span>
+                <span className="text-[10px] bg-[#FAF8F5] text-[#5C6460] px-2 py-0.5 rounded border border-[#E6E1D8]">External</span>
+              </div>
+              <p className="text-xs text-[#5C6460] leading-relaxed">
+                Can submit grievances, upload evidence, and track the status of their own submitted cases. Strictly restricted from viewing grievances filed by others, modifying workflow statuses, or accessing internal coordination tools.
+              </p>
+            </div>
+
+            <div className="p-4 bg-white border border-[#E6E1D8] rounded-xl space-y-1.5 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs text-[#1F2421]">Bureau Officer (Scrutiny & Inquiry)</span>
+                <span className="text-[10px] bg-[#EBF3EE] text-[#1B4532] px-2 py-0.5 rounded border border-[#CDE1D5]">Operational</span>
+              </div>
+              <p className="text-xs text-[#5C6460] leading-relaxed">
+                Attached to specific regulatory bureaus. Can triage assigned complaints, log investigative notes, transition workflow statuses within their designated bureau, and review cross-bureau overlap recommendations.
+              </p>
+            </div>
+
+            <div className="p-4 bg-white border border-[#E6E1D8] rounded-xl space-y-1.5 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs text-[#1F2421]">Bureau Head (Departmental Authority)</span>
+                <span className="text-[10px] bg-[#F5F3FF] text-[#6D28D9] px-2 py-0.5 rounded border border-[#DDD6FE]">Supervisory</span>
+              </div>
+              <p className="text-xs text-[#5C6460] leading-relaxed">
+                Oversees bureau caseload and scrutiny officers. Holds authority to dispatch formal statutory SLA escalation notices for overdue cases, sign off on resolution reviews, and access administration screens.
+              </p>
+            </div>
+
+            <div className="p-4 bg-white border border-[#E6E1D8] rounded-xl space-y-1.5 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs text-[#1F2421]">Apex Admin (AICTE Headquarters)</span>
+                <span className="text-[10px] bg-[#FEF2F2] text-[#DC2626] px-2 py-0.5 rounded border border-[#FECACA]">Full Authority</span>
+              </div>
+              <p className="text-xs text-[#5C6460] leading-relaxed">
+                Universal oversight across all AICTE bureaus. Can transfer cases across bureaus, dispatch escalation notices for any case, configure statutory SLA duration rules, and manage user accounts.
+              </p>
+            </div>
+          </div>
+
+          {/* Granular Matrix in Expander */}
+          <Card>
+            <div className="p-4 border-b border-[#E6E1D8] bg-[#FAF8F5] flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={18} className="text-[#154636]" />
-                <span>Role Permissions & Access Control Matrix (13 Capabilities)</span>
+                <div>
+                  <h3 className="text-sm font-bold text-[#1F2421]">Full Functional Access Control Matrix</h3>
+                  <p className="text-xs text-[#5C6460]">13 granular functional capabilities across all AICTE CaseConnect roles</p>
+                </div>
               </div>
-            }
-            subtitle="Granular functional permissions enforced on the server across all four AICTE CaseConnect roles"
-            action={
-              <span className="text-xs text-[#64748B] font-mono">
-                SIH26264 Architecture Specification
-              </span>
-            }
-          />
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-[#FAF8F5] border-b border-[#E6E1D8] text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
-                  <th className="py-3 px-4 w-1/3">Capability / Operation</th>
-                  <th className="py-3 px-4 text-center">Complainant</th>
-                  <th className="py-3 px-4 text-center">Bureau Officer</th>
-                  <th className="py-3 px-4 text-center">Bureau Head</th>
-                  <th className="py-3 px-4 text-center bg-[#EAF5EE]/40 text-[#155836]">
-                    Apex Admin
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E6E1D8]">
-                {permissionsMatrix.map((row) => (
-                  <tr key={row.id} className="hover:bg-[#FAF8F5]/80 transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="font-bold text-[#0F172A]">{row.capability}</div>
-                      <div className="text-[11px] text-[#64748B] mt-0.5">{row.description}</div>
-                    </td>
 
-                    <td className="py-3 px-4 text-center whitespace-nowrap">
-                      {renderPermissionBadge(row.complainant)}
-                    </td>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPermissionsExpanded(!permissionsExpanded)}
+                icon={permissionsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              >
+                {permissionsExpanded ? 'Collapse Matrix' : 'Expand Matrix'}
+              </Button>
+            </div>
 
-                    <td className="py-3 px-4 text-center whitespace-nowrap">
-                      {renderPermissionBadge(row.officer)}
-                    </td>
+            {permissionsExpanded && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-[#FAF8F5] border-b border-[#E6E1D8] text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                      <th className="py-3 px-4 w-1/3">Capability / Operation</th>
+                      <th className="py-3 px-4 text-center">Complainant</th>
+                      <th className="py-3 px-4 text-center">Bureau Officer</th>
+                      <th className="py-3 px-4 text-center">Bureau Head</th>
+                      <th className="py-3 px-4 text-center bg-[#EAF5EE]/40 text-[#155836]">
+                        Apex Admin
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E6E1D8]">
+                    {permissionsMatrix.map((row) => (
+                      <tr key={row.id} className="hover:bg-[#FAF8F5]/80 transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="font-bold text-[#0F172A]">{row.capability}</div>
+                          <div className="text-[11px] text-[#64748B] mt-0.5">{row.description}</div>
+                        </td>
 
-                    <td className="py-3 px-4 text-center whitespace-nowrap">
-                      {renderPermissionBadge(row.head)}
-                    </td>
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          {renderPermissionBadge(row.complainant)}
+                        </td>
 
-                    <td className="py-3 px-4 text-center whitespace-nowrap bg-[#EAF5EE]/20">
-                      {renderPermissionBadge(row.admin, true)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          {renderPermissionBadge(row.officer)}
+                        </td>
+
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          {renderPermissionBadge(row.head)}
+                        </td>
+
+                        <td className="py-3 px-4 text-center whitespace-nowrap bg-[#EAF5EE]/20">
+                          {renderPermissionBadge(row.admin, true)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        </div>
       )}
 
       {/* TAB 2: CONFIGURABLE SLA RULES */}
@@ -1346,6 +1443,30 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           </div>
         </div>
       </Modal>
+
+      {/* Delete Rule Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={ruleToDelete !== null}
+        title="Delete Statutory SLA Rule"
+        description={`Are you sure you want to delete SLA rule "${ruleToDelete?.name}"? Any cases relying on this rule will fall back to standard bureau defaults.`}
+        confirmLabel="Delete SLA Rule"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={confirmDeleteRule}
+        onCancel={() => setRuleToDelete(null)}
+      />
+
+      {/* Reset Rules Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showResetRulesConfirm}
+        title="Reset All SLA Rules to Benchmark Defaults"
+        description="Are you sure you want to reset all statutory SLA benchmark rules to initial defaults? Custom duration thresholds will be restored."
+        confirmLabel="Reset Rules"
+        cancelLabel="Cancel"
+        variant="warning"
+        onConfirm={confirmResetRules}
+        onCancel={() => setShowResetRulesConfirm(false)}
+      />
     </div>
   );
 };
