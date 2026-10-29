@@ -141,3 +141,4 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
     </div>
   );
 };
+

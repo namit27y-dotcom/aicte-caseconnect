@@ -174,3 +174,4 @@ export function can(
       return { allowed: false, reason: 'Action not recognized.' };
   }
 }
+

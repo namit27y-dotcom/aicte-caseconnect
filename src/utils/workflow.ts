@@ -70,3 +70,4 @@ export function validateTransition(
   }
   return { valid: true };
 }
+

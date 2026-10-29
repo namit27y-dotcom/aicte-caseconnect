@@ -113,16 +113,15 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   const isBureauHead = currentPersona.role === 'BUREAU_HEAD';
   const isApexAdmin = currentPersona.role === 'APEX_ADMIN';
 
-  // Guard for non-admin viewers
-  if (isComplainant) {
+  // Guard: Complainant and Bureau Officers cannot access Administration
+  if (isComplainant || isOfficer) {
     const adminAccess = can(currentPersona, 'VIEW_ADMIN');
-  if (!adminAccess.allowed) {
     return (
       <div className="space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E6E1D8]">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-[#0F172A]">
-              System Administration & Governance
+              System Administration &amp; Governance
             </h2>
             <p className="text-xs text-[#64748B] mt-0.5">
               Restricted institutional settings and governance policies
@@ -135,30 +134,15 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           </div>
           <h3 className="text-base font-bold text-[#1F2421]">Administrative Access Restricted</h3>
           <p className="text-xs text-[#5C6460] mt-1.5 leading-relaxed">
-            {adminAccess.reason}
+            {adminAccess.reason || 'System administration requires Bureau Head or Apex Admin privileges.'}
           </p>
           <span className="text-[11px] text-[#718096] block mt-3 font-mono">
             Current Persona: {currentPersona.name} ({currentPersona.roleLabel})
           </span>
+          <p className="text-[11px] text-[#718096] mt-2">
+            Tip: Switch your demo persona to <strong>Prof. R. K. Verma (Apex Admin)</strong> using the role switcher in the sidebar.
+          </p>
         </div>
-      </div>
-    );
-  }
-
-  return (
-      <div className="p-8 max-w-xl mx-auto text-center space-y-4 bg-white border border-[#E6E1D8] rounded-xl mt-8 shadow-xs">
-        <div className="w-12 h-12 rounded-full bg-[#FEE2E2] border border-[#FECACA] text-[#DC2626] flex items-center justify-center mx-auto">
-          <Lock size={22} />
-        </div>
-        <h3 className="text-base font-bold text-[#0F172A]">
-          Role-Restricted Administration Portal
-        </h3>
-        <p className="text-xs text-[#64748B] leading-relaxed">
-          Your current active demo persona is <span className="font-semibold text-[#0F172A]">{currentPersona.roleLabel}</span>. In accordance with AICTE Section 3 RBAC policies, system administration, SLA rule configuration, and user permissions are restricted to <span className="font-semibold text-[#154636]">Bureau Head</span> and <span className="font-semibold text-[#154636]">Apex Admin</span>.
-        </p>
-        <p className="text-[11px] text-[#718096]">
-          Tip: You can switch your active demo persona to <strong>Prof. R. K. Verma (Apex Admin)</strong> using the role switcher at the bottom of the sidebar.
-        </p>
       </div>
     );
   }

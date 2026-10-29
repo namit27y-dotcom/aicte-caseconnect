@@ -104,3 +104,4 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
     </div>
   );
 };
+

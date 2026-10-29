@@ -46,3 +46,4 @@ export const DataTable: React.FC<DataTableProps> = ({
     </div>
   );
 };
+
