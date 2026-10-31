@@ -59,6 +59,8 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const notificationsContainerRef = useRef<HTMLDivElement>(null);
+  const roleMenuContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -79,11 +81,24 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
       if (
         searchContainerRef.current &&
-        !searchContainerRef.current.contains(e.target as Node)
+        !searchContainerRef.current.contains(target)
       ) {
         setSearchDropdownOpen(false);
+      }
+      if (
+        notificationsContainerRef.current &&
+        !notificationsContainerRef.current.contains(target)
+      ) {
+        setNotificationsOpen(false);
+      }
+      if (
+        roleMenuContainerRef.current &&
+        !roleMenuContainerRef.current.contains(target)
+      ) {
+        setRoleMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -209,24 +224,118 @@ export const TopBar: React.FC<TopBarProps> = ({
         )}
       </div>
 
-      {/* Right: Bell with Red Badge [0/5] + Persona Pill [AK] Aashish Kumar v */}
+      {/* Right: Bell with Red Badge + Persona Pill */}
       <div className="flex items-center gap-3">
-        {/* Bell with red badge */}
-        <div className="relative">
+        {/* Bell with red badge & notification dropdown */}
+        <div ref={notificationsContainerRef} className="relative">
           <button
             onClick={() => setNotificationsOpen(!notificationsOpen)}
-            className="p-1 text-[#737A72] hover:text-[#252D27] relative cursor-pointer"
+            className={`p-1.5 rounded-full text-[#737A72] hover:text-[#252D27] hover:bg-[#F7F5EF] relative cursor-pointer transition-colors ${
+              notificationsOpen ? 'bg-[#F7F5EF] text-[#252D27]' : ''
+            }`}
             aria-label="View notifications"
           >
             <Bell size={16} />
-            <span className="absolute -top-1 -right-1.5 min-w-3.5 h-3.5 px-0.5 rounded-full bg-[#B94F45] text-white text-[8.5px] font-mono font-bold flex items-center justify-center">
-              {unreadNotifications.length || 5}
-            </span>
+            {unreadNotifications.length > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-3.5 h-3.5 px-0.5 rounded-full bg-[#B94F45] text-white text-[8.5px] font-mono font-bold flex items-center justify-center shadow-2xs">
+                {unreadNotifications.length}
+              </span>
+            )}
           </button>
+
+          {/* Notifications Dropdown Popover */}
+          {notificationsOpen && (
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-[#E8E2D6] rounded-xl shadow-xl p-3 z-50">
+              {/* Header */}
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#F7F5EF] mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-[#172B24] font-serif">
+                    Notifications &amp; Alerts
+                  </span>
+                  {unreadNotifications.length > 0 && (
+                    <span className="px-1.5 py-0.2 rounded text-[9.5px] font-bold bg-[#B94F45]/10 text-[#B94F45] border border-[#B94F45]/20 font-mono">
+                      {unreadNotifications.length} new
+                    </span>
+                  )}
+                </div>
+                {unreadNotifications.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={onMarkAllNotificationsRead}
+                    className="text-[11px] text-[#174B38] hover:underline font-medium cursor-pointer"
+                  >
+                    Mark all read
+                  </button>
+                )}
+              </div>
+
+              {/* Notification Items */}
+              <div className="space-y-1.5 max-h-80 overflow-y-auto pr-0.5">
+                {notifications.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-[#78847D]">
+                    No active notifications or alerts.
+                  </div>
+                ) : (
+                  notifications.map((notif) => {
+                    const isUnread = !readNotificationIds.has(notif.id);
+                    const iconMap = {
+                      danger: <AlertTriangle size={15} className="text-[#B94F45] shrink-0 mt-0.5" />,
+                      warning: <GitMerge size={15} className="text-[#C58B3B] shrink-0 mt-0.5" />,
+                      info: <FileText size={15} className="text-[#174B38] shrink-0 mt-0.5" />,
+                    };
+
+                    return (
+                      <div
+                        key={notif.id}
+                        onClick={() => {
+                          onNotificationClick(notif);
+                          setNotificationsOpen(false);
+                        }}
+                        className={`p-2.5 rounded-lg border text-left text-xs flex gap-2.5 cursor-pointer transition-all ${
+                          isUnread
+                            ? 'bg-[#F7F5EF]/80 border-[#E8E2D6] hover:bg-[#F7F5EF] shadow-2xs'
+                            : 'bg-white border-[#F7F5EF] opacity-75 hover:opacity-100 hover:bg-[#F7F5EF]/40'
+                        }`}
+                      >
+                        {iconMap[notif.severity]}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className={`font-semibold leading-tight truncate ${isUnread ? 'text-[#172B24]' : 'text-[#78847D]'}`}>
+                              {notif.title}
+                            </span>
+                            {isUnread && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#174B38] shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-[11px] text-[#78847D] mt-0.5 leading-snug line-clamp-2">
+                            {notif.message}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="pt-2.5 border-t border-[#F7F5EF] mt-2 flex items-center justify-between text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNavigateTab('deadlines');
+                    setNotificationsOpen(false);
+                  }}
+                  className="text-[11px] text-[#174B38] hover:underline font-semibold cursor-pointer"
+                >
+                  View Statutory SLA Deadlines →
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Persona Pill from Image 1: [AK Circle] Aashish Kumar v */}
-        <div className="relative">
+        <div ref={roleMenuContainerRef} className="relative">
           <button
             onClick={() => setRoleMenuOpen(!roleMenuOpen)}
             className="flex items-center gap-1.5 pl-0.5 pr-1.5 py-0.5 rounded-full hover:bg-[#F7F5EF] cursor-pointer transition-colors text-xs"
