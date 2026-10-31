@@ -15,6 +15,7 @@ interface DonutChartProps {
   onSelectSegment?: (key: string) => void;
   size?: number;
   className?: string;
+  showLegend?: boolean;
 }
 
 export const DonutChart: React.FC<DonutChartProps> = ({
@@ -24,13 +25,16 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   onSelectSegment,
   size = 200,
   className = '',
+  showLegend = true,
 }) => {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
+  // Standardized 200x200 coordinate system so SVG scales to ANY size without clipping or overflowing
+  const viewBoxSize = 200;
   const radius = 64;
   const strokeWidth = 24;
   const circumference = 2 * Math.PI * radius;
-  const center = size / 2;
+  const center = viewBoxSize / 2;
 
   // Build strokeDasharray and strokeDashoffset for each segment
   let accumulatedPercent = 0;
@@ -54,12 +58,12 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   return (
     <div className={`flex flex-col items-center select-none ${className}`}>
       {/* SVG Donut */}
-      <div className="relative" style={{ width: size, height: size }}>
+      <div className="relative shrink-0" style={{ width: size, height: size }}>
         <svg
           width={size}
           height={size}
-          viewBox={`0 0 ${size} ${size}`}
-          className="transform -rotate-90"
+          viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+          className="transform -rotate-90 overflow-hidden"
           role="img"
           aria-label={`Donut chart showing ${segments.map((s) => `${s.label}: ${s.count} (${s.percentage}%)`).join(', ')}`}
         >
@@ -107,14 +111,16 @@ export const DonutChart: React.FC<DonutChartProps> = ({
 
         {/* Center Display */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-          <span className="text-2xl font-bold font-sans text-[#1F2421] tabular-nums tracking-tight">
+          <span className={`${size < 130 ? 'text-lg' : 'text-2xl'} font-bold font-sans text-[#1F2421] tabular-nums tracking-tight leading-none`}>
             {activeSegment ? activeSegment.count : total}
           </span>
-          <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider px-2 line-clamp-1">
-            {activeSegment ? activeSegment.label : centerLabel}
-          </span>
+          {centerLabel && (
+            <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider px-1 line-clamp-1 mt-0.5">
+              {activeSegment ? activeSegment.label : centerLabel}
+            </span>
+          )}
           {activeSegment && (
-            <span className="text-[11px] font-medium text-[#1B4532]">
+            <span className="text-[10.5px] font-medium text-[#1B4532]">
               {activeSegment.percentage}%
             </span>
           )}
@@ -122,38 +128,40 @@ export const DonutChart: React.FC<DonutChartProps> = ({
       </div>
 
       {/* Interactive Legend */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4 w-full">
-        {segments.map((seg) => (
-          <button
-            key={seg.key}
-            type="button"
-            onClick={() => onSelectSegment && onSelectSegment(seg.key)}
-            onMouseEnter={() => setHoveredKey(seg.key)}
-            onMouseLeave={() => setHoveredKey(null)}
-            className={`flex items-center justify-between p-2 rounded-md border text-left text-xs transition-colors cursor-pointer ${
-              hoveredKey === seg.key
-                ? 'bg-[#FAF8F5] border-[#1B4532]'
-                : 'bg-white border-[#E6E1D8] hover:bg-[#FAF8F5]'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 min-w-0 pr-1">
-              <span
-                className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ backgroundColor: seg.color }}
-              />
-              <span className="text-[11px] text-[#5C6460] font-medium truncate">
-                {seg.label}
-              </span>
-            </div>
-            <div className="text-[11px] font-mono font-semibold text-[#1F2421] shrink-0">
-              {seg.count}{' '}
-              <span className="text-[10px] font-normal text-[#94A3B8]">
-                ({seg.percentage}%)
-              </span>
-            </div>
-          </button>
-        ))}
-      </div>
+      {showLegend && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4 w-full">
+          {segments.map((seg) => (
+            <button
+              key={seg.key}
+              type="button"
+              onClick={() => onSelectSegment && onSelectSegment(seg.key)}
+              onMouseEnter={() => setHoveredKey(seg.key)}
+              onMouseLeave={() => setHoveredKey(null)}
+              className={`flex items-center justify-between p-2 rounded-md border text-left text-xs transition-colors cursor-pointer ${
+                hoveredKey === seg.key
+                  ? 'bg-[#FAF8F5] border-[#174B38]'
+                  : 'bg-white border-[#E8E2D6] hover:bg-[#FAF8F5]'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 min-w-0 pr-1">
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: seg.color }}
+                />
+                <span className="text-[11px] text-[#78847D] font-medium truncate">
+                  {seg.label}
+                </span>
+              </div>
+              <div className="text-[11px] font-mono font-semibold text-[#172B24] shrink-0">
+                {seg.count}{' '}
+                <span className="text-[10px] font-normal text-[#78847D]">
+                  ({seg.percentage}%)
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Screen Reader Table */}
       <div className="sr-only">

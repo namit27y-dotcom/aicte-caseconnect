@@ -46,17 +46,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ currentPersona }) =>
             Configure application
           </p>
         </div>
-
-        {/* Thumbnail preview photograph on right */}
-        <div className="hidden md:flex items-center gap-3">
-          <div className="w-36 h-16 rounded-lg overflow-hidden border border-[#E7E4DB]">
-            <img 
-              src="/assets/banner-settings.jpg" 
-              alt="Settings Configuration" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
       </div>
 
       {/* 2. Settings Layout Matching PDF Page 5: Left Menu Tabs, Right Form + Image Card */}

@@ -12,12 +12,14 @@ interface LineChartProps {
   data: TrendDataPoint[];
   height?: number;
   className?: string;
+  showLegend?: boolean;
 }
 
 export const LineChart: React.FC<LineChartProps> = ({
   data,
   height = 220,
   className = '',
+  showLegend = true,
 }) => {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
@@ -67,16 +69,18 @@ export const LineChart: React.FC<LineChartProps> = ({
   return (
     <div className={`w-full select-none ${className}`}>
       {/* Legend */}
-      <div className="flex items-center justify-end gap-4 text-xs mb-2">
-        <div className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 bg-[#193B2A] inline-block" />
-          <span className="text-[#4B5563] font-medium">New Intake</span>
+      {showLegend && (
+        <div className="flex items-center justify-end gap-4 text-xs mb-2">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#174B38] inline-block" />
+            <span className="text-[#78847D] font-medium">Received</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#829B86] inline-block" />
+            <span className="text-[#78847D] font-medium">Resolved</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 bg-[#4F8064] inline-block" />
-          <span className="text-[#4B5563] font-medium">Disposed / Closed</span>
-        </div>
-      </div>
+      )}
 
       <div className="relative w-full overflow-hidden">
         <svg

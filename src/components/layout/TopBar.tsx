@@ -110,10 +110,12 @@ export const TopBar: React.FC<TopBarProps> = ({
     overview: 'Overview',
     institutions: 'Institutions',
     complaints: 'Complaints',
-    coordination: 'Overlap Intelligence',
+    overlap: 'Overlap Intelligence',
+    coordination: 'Coordination Centre',
     deadlines: 'Alerts & SLA',
     analytics: 'Analytics & Reports',
     administration: 'Users & Officers',
+    data_management: 'Data Management',
     audit: 'Audit Logs',
     settings: 'Settings',
   };
@@ -155,7 +157,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               setSearchDropdownOpen(true);
             }}
             onFocus={() => setSearchDropdownOpen(true)}
-            className="w-full bg-[#F7F5EF] border border-[#E7E4DB] rounded-full pl-8 pr-12 py-1 text-[11.5px] text-[#252D27] placeholder-[#737A72] focus:outline-none focus:border-[#193B2A] transition-all"
+            className="w-full bg-[#F7F5EF] border border-[#E7E4DB] rounded-full pl-8 pr-12 py-1 text-[11.5px] text-[#252D27] placeholder-[#737A72] focus:outline-none focus:border-[#174B38] transition-all"
           />
           <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 px-1 py-0.2 text-[9px] font-mono text-[#737A72] bg-white border border-[#E7E4DB] rounded shadow-2xs">
             Ctrl K
@@ -191,7 +193,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     className="p-2.5 hover:bg-[#F7F5EF] cursor-pointer transition-colors"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-xs font-bold text-[#193B2A]">
+                      <span className="font-mono text-xs font-bold text-[#174B38]">
                         {c.trackingNumber}
                       </span>
                       <StatusBadge status={c.status} size="sm" />
@@ -257,7 +259,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                       }}
                       className={`w-full text-left px-2 py-1.5 rounded-md text-xs flex items-center justify-between cursor-pointer transition-colors ${
                         isSelected
-                          ? 'bg-[#193B2A] text-white font-medium'
+                          ? 'bg-[#174B38] text-white font-medium'
                           : 'text-[#252D27] hover:bg-[#F7F5EF]'
                       }`}
                     >
@@ -265,7 +267,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         <div className="font-medium leading-tight">{p.name}</div>
                         <div className="text-[10px] text-[#737A72]">{p.roleLabel}</div>
                       </div>
-                      {isSelected && <CheckCircle2 size={12} className="text-[#C5A568]" />}
+                      {isSelected && <CheckCircle2 size={12} className="text-[#D5A64A]" />}
                     </button>
                   );
                 })}

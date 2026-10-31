@@ -185,9 +185,11 @@ export type NavigationTab =
   | 'overview'
   | 'complaints'
   | 'institutions'
+  | 'overlap'
   | 'coordination'
   | 'deadlines'
   | 'analytics'
   | 'audit'
   | 'administration'
+  | 'data_management'
   | 'settings';

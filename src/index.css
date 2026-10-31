@@ -2,28 +2,31 @@
 
 @theme {
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-heading: "Manrope", sans-serif;
+  --font-serif: "Lora", "Cinzel", Georgia, serif;
+  --font-heading: "Lora", "Cinzel", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* Strict AICTE Color Palette */
-  --color-forest: #193B2A;
-  --color-deep-green: #142B21;
+  --color-sidebar: #12382B;
+  --color-forest: #174B38;
+  --color-deep-green: #12382B;
   --color-muted-sage: #829B86;
   --color-warm-ivory: #F7F5EF;
-  --color-soft-beige: #E9E3D6;
-  --color-muted-gold: #C5A568;
-  --color-primary-text: #252D27;
-  --color-secondary-text: #737A72;
-  --color-border-warm: #E7E4DB;
+  --color-card-bg: #FFFFFF;
+  --color-soft-beige: #E8E2D6;
+  --color-muted-gold: #D5A64A;
+  --color-primary-text: #172B24;
+  --color-secondary-text: #78847D;
+  --color-border-warm: #E8E2D6;
   --color-danger: #B94F45;
   --color-warning: #C58B3B;
   --color-success: #4F8064;
 
   /* Legacy mappings mapped strictly to new palette */
   --color-alabaster: #F7F5EF;
-  --color-charcoal: #252D27;
-  --color-forest-900: #142B21;
-  --color-forest-800: #193B2A;
+  --color-charcoal: #172B24;
+  --color-forest-900: #12382B;
+  --color-forest-800: #174B38;
   --color-forest-700: #1F4A35;
   --color-forest-600: #2E6B4E;
   --color-forest-100: #E9EFEA;
@@ -34,8 +37,8 @@
 }
 
 /* Base Headings Rule */
-h1, h2, h3, h4, .font-heading {
-  font-family: var(--font-heading);
+h1, h2, h3, h4, .font-heading, .font-serif {
+  font-family: var(--font-serif);
 }
 
 /* Custom scrollbars and tabular figures */

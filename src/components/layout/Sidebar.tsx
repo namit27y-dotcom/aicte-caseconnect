@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badgeCount: badges.complaints || 9,
         },
         {
-          id: 'coordination',
+          id: 'overlap',
           label: 'Overlap Intelligence',
           icon: <Share2 size={16} strokeWidth={1.8} />,
           badgeCount: badges.coordination || 2,
@@ -114,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: <Users size={16} strokeWidth={1.8} />,
         },
         {
-          id: 'administration',
+          id: 'data_management',
           label: 'Data Management',
           icon: <Database size={16} strokeWidth={1.8} />,
         },
@@ -147,13 +147,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         id="app-sidebar"
         role="navigation"
         aria-label="Main Navigation"
-        className={`fixed inset-y-0 left-0 z-50 w-[240px] bg-[#142B21] text-[#F7F5EF] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[240px] bg-[#12382B] text-[#F7F5EF] flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-        } border-r border-[#193B2A] select-none`}
+        } border-r border-[#174B38] select-none`}
       >
         <div>
           {/* Brand Header with Cropped AICTE Official Logo */}
-          <div className="p-3.5 pt-4 pb-3 flex items-center justify-between border-b border-[#193B2A]/70">
+          <div className="p-3.5 pt-4 pb-3 flex items-center justify-between border-b border-[#174B38]/70">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 p-0.5">
                 <img 
@@ -166,7 +166,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="text-[14px] font-bold tracking-tight text-white font-heading block">
                   AICTE
                 </span>
-                <span className="text-[10px] text-[#C5A568] font-medium tracking-wide block">
+                <span className="text-[10px] text-[#D5A64A] font-medium tracking-wide block">
                   CaseConnect
                 </span>
               </div>
@@ -202,13 +202,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       }}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[12px] font-medium transition-all cursor-pointer ${
                         isActive
-                          ? 'bg-[#193B2A] text-white shadow-2xs font-semibold'
-                          : 'text-[#829B86] hover:text-white hover:bg-[#193B2A]/40'
+                          ? 'bg-[#174B38] text-white shadow-2xs font-semibold'
+                          : 'text-[#829B86] hover:text-white hover:bg-[#174B38]/40'
                       }`}
                       aria-current={isActive ? 'page' : undefined}
                     >
                       <div className="flex items-center gap-2.5">
-                        <span className={isActive ? 'text-[#C5A568]' : 'text-[#829B86]'}>
+                        <span className={isActive ? 'text-[#D5A64A]' : 'text-[#829B86]'}>
                           {item.icon}
                         </span>
                         <span className="truncate">{item.label}</span>
@@ -220,7 +220,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           className={`min-w-4 h-4 px-1 rounded-full text-[9.5px] font-mono font-bold flex items-center justify-center ${
                             item.label.includes('Alert') || item.label.includes('SLA')
                               ? 'bg-[#C58B3B] text-white'
-                              : 'bg-[#C5A568]/20 text-[#C5A568]'
+                              : 'bg-[#D5A64A]/20 text-[#D5A64A]'
                           }`}
                         >
                           {item.badgeCount}
@@ -235,10 +235,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Bottom Section: Active Persona Profile with Dropdown Chevron & Lotus Accent */}
-        <div className="p-2.5 border-t border-[#193B2A]/60 relative overflow-hidden">
-          <div className="bg-[#193B2A]/60 border border-[#193B2A] rounded-lg p-2 flex items-center justify-between cursor-pointer hover:bg-[#193B2A] transition-colors relative z-10">
+        <div className="p-2.5 border-t border-[#174B38]/60 relative overflow-hidden">
+          <div className="bg-[#174B38]/60 border border-[#174B38] rounded-lg p-2 flex items-center justify-between cursor-pointer hover:bg-[#174B38] transition-colors relative z-10">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-[#142B21] border border-[#C5A568]/40 flex items-center justify-center text-[#C5A568] font-bold text-[10px] shrink-0">
+              <div className="w-7 h-7 rounded-full bg-[#12382B] border border-[#D5A64A]/40 flex items-center justify-center text-[#D5A64A] font-bold text-[10px] shrink-0">
                 {currentPersona.avatarInitials}
               </div>
               <div className="min-w-0 flex-1">
@@ -255,11 +255,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Institutional Subtle Lotus Watermark Contour */}
           <div className="pt-2 flex justify-center opacity-25 pointer-events-none select-none">
-            <svg width="48" height="24" viewBox="0 0 100 50" fill="none" stroke="#C5A568" strokeWidth="1.5">
+            <svg width="48" height="24" viewBox="0 0 100 50" fill="none" stroke="#D5A64A" strokeWidth="1.5">
               <path d="M50 45 C40 30, 20 25, 10 35 C20 15, 40 20, 50 45 Z" />
               <path d="M50 45 C60 30, 80 25, 90 35 C80 15, 60 20, 50 45 Z" />
               <path d="M50 45 C35 25, 30 10, 50 5 C70 10, 65 25, 50 45 Z" />
-              <circle cx="50" cy="5" r="2" fill="#C5A568" />
+              <circle cx="50" cy="5" r="2" fill="#D5A64A" />
             </svg>
           </div>
         </div>

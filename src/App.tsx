@@ -492,7 +492,7 @@ export default function App() {
               />
             )}
 
-            {activeTab === 'coordination' && (
+            {(activeTab === 'coordination' || activeTab === 'overlap') && (
               <CoordinationView
                 coordinationGroups={coordinationGroups}
                 overlapCandidates={overlapCandidates}
@@ -529,7 +529,7 @@ export default function App() {
               />
             )}
 
-            {activeTab === 'administration' && (
+            {(activeTab === 'administration' || activeTab === 'data_management') && (
               <AdministrationView
                 currentPersona={currentPersona}
                 deadlineRules={deadlineRules}

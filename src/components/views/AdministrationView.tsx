@@ -674,15 +674,8 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           </p>
         </div>
 
-        {/* Thumbnail preview photograph & Add User on right */}
+        {/* Add User on right */}
         <div className="flex items-center gap-3">
-          <div className="hidden md:block w-36 h-16 rounded-lg overflow-hidden border border-[#E7E4DB]">
-            <img 
-              src="/assets/banner-users.jpg" 
-              alt="Users and Officers" 
-              className="w-full h-full object-cover"
-            />
-          </div>
           <button 
             onClick={() => setIsAddUserModalOpen(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#193B2A] text-white text-xs font-semibold hover:bg-[#142B21] transition-colors cursor-pointer shadow-xs shrink-0"
