@@ -18,11 +18,11 @@ export const DataTable: React.FC<DataTableProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`bg-white border border-[#E6E1D8] rounded-lg shadow-2xs overflow-hidden ${className}`}>
+    <div className={`bg-white border border-[#E7E4DB] rounded-lg shadow-2xs overflow-hidden ${className}`}>
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs" aria-label={ariaLabel}>
           <thead>
-            <tr className="bg-[#FAF8F5] border-b border-[#E6E1D8] text-[11px] font-semibold text-[#5C6460] uppercase tracking-wider">
+            <tr className="bg-[#F7F5EF] border-b border-[#E7E4DB] text-[11px] font-semibold text-[#737A72] uppercase tracking-wider">
               {headers.map((header, idx) => (
                 <th key={idx} className="py-3 px-4 font-semibold">
                   {header}
@@ -30,7 +30,7 @@ export const DataTable: React.FC<DataTableProps> = ({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#E6E1D8]">
+          <tbody className="divide-y divide-[#E7E4DB]">
             {isEmpty ? (
               <tr>
                 <td colSpan={headers.length} className="py-12 px-4 text-center">

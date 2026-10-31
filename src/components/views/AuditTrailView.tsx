@@ -84,21 +84,73 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
 
   return (
     <div className="space-y-5">
-      {/* View Header */}
-      <PageHeader
-        title="Immutable Statutory Audit Trail"
-        subtitle="Chronological, cryptographically verifiable ledger of every workflow state change, SLA dispatch, and coordination link"
-      />
+      {/* 1. Top Section Header Matching Reference Image 1 & 2 */}
+      <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs relative overflow-hidden">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#252D27] font-heading">
+            Audit Logs
+          </h1>
+          <p className="text-xs text-[#737A72] mt-0.5">
+            Tamper-evident log of case status changes, escalations, and decisions
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[11px] text-[#193B2A] bg-[#EAF5EE] border border-[#D1E7D9] px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5">
+            <ShieldCheck size={14} className="text-[#155836]" />
+            Hash-chain verified • Append-only
+          </span>
+        </div>
+      </div>
+
+      {/* 2. 4 KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs">
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            {auditLogs.length}
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Total Records
+          </div>
+        </div>
+
+        <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs">
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            {auditLogs.filter((l) => l.actionType === 'STATUS_CHANGE').length}
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Status Changes
+          </div>
+        </div>
+
+        <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs">
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            {auditLogs.filter((l) => l.actionType === 'DEADLINE_OVERRIDE' || l.actionType === 'COORDINATION_INITIATED').length}
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            SLA Escalations
+          </div>
+        </div>
+
+        <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs">
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            {new Set(auditLogs.map((l) => l.actorName)).size}
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Active Actors
+          </div>
+        </div>
+      </div>
 
       {/* Compliance Note */}
-      <div className="p-3 bg-[#FAF8F5] border border-[#E6E1D8] rounded-lg text-xs text-[#5C6460] flex items-center justify-between">
+      <div className="p-3 bg-[#F7F5EF] border border-[#E7E4DB] rounded-lg text-xs text-[#737A72] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ShieldCheck size={16} className="text-[#1B4532]" />
+          <ShieldCheck size={16} className="text-[#193B2A]" />
           <span>
             <strong>Section 7 Rule 7:</strong> All case mutations generate an unalterable audit item. No modification or deletion is permitted.
           </span>
         </div>
-        <span className="font-mono text-[11px] text-[#718096] hidden sm:inline">
+        <span className="font-mono text-[11px] text-[#737A72] hidden sm:inline">
           Hash-chain verified • Append-only
         </span>
       </div>
@@ -109,7 +161,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
         onClearAll={handleResetFilters}
         resultSummary={
           <span>
-            Showing <strong className="font-mono text-[#1F2421]">{filteredLogs.length}</strong> of{' '}
+            Showing <strong className="font-mono text-[#252D27]">{filteredLogs.length}</strong> of{' '}
             {auditLogs.length} audit records
           </span>
         }
@@ -122,7 +174,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
             placeholder="Search entity, actor, keyword..."
             value={entitySearch}
             onChange={(e) => setEntitySearch(e.target.value)}
-            className="bg-[#FAF8F5] border border-[#D5CEC2] rounded-md pl-8 pr-2.5 py-1 text-xs text-[#1F2421] focus:outline-none focus:border-[#1B4532]"
+            className="bg-[#F7F5EF] border border-[#D5CEC2] rounded-md pl-8 pr-2.5 py-1 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
           />
         </div>
 
@@ -130,7 +182,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
         <select
           value={actionFilter}
           onChange={(e) => setActionFilter(e.target.value)}
-          className="bg-[#FAF8F5] border border-[#D5CEC2] rounded-md px-2.5 py-1 text-xs text-[#1F2421] focus:outline-none focus:border-[#1B4532]"
+          className="bg-[#F7F5EF] border border-[#D5CEC2] rounded-md px-2.5 py-1 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
         >
           <option value="ALL">All Event Types</option>
           <option value="STATUS_CHANGE">Status Transitions</option>
@@ -144,7 +196,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
         <select
           value={dateRangeFilter}
           onChange={(e) => setDateRangeFilter(e.target.value)}
-          className="bg-[#FAF8F5] border border-[#D5CEC2] rounded-md px-2.5 py-1 text-xs text-[#1F2421] focus:outline-none focus:border-[#1B4532]"
+          className="bg-[#F7F5EF] border border-[#D5CEC2] rounded-md px-2.5 py-1 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
         >
           <option value="ALL">All Time</option>
           <option value="1D">Last 24 Hours</option>
@@ -155,7 +207,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
 
       {/* Audit Log Table */}
       <DataTable
-        ariaLabel="Immutable Statutory Audit Trail"
+        ariaLabel="Audit Trail"
         isEmpty={filteredLogs.length === 0}
         emptyState={
           <EmptyState
@@ -175,9 +227,9 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
         ]}
       >
         {filteredLogs.map((log) => (
-          <tr key={log.id} className="hover:bg-[#FAF8F5] transition-colors">
+          <tr key={log.id} className="hover:bg-[#F7F5EF] transition-colors">
             {/* Timestamp */}
-            <td className="py-3 px-4 font-mono text-[#5C6460] whitespace-nowrap text-[11px]">
+            <td className="py-3 px-4 font-mono text-[#737A72] whitespace-nowrap text-[11px]">
               <div className="flex items-center gap-1.5">
                 <Clock size={12} className="text-[#94A3B8]" />
                 <span>{log.timestamp.replace('T', ' ').slice(0, 19)}</span>
@@ -186,31 +238,31 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
 
             {/* Action Type */}
             <td className="py-3 px-4 whitespace-nowrap">
-              <span className="font-mono text-[10.5px] font-bold px-2 py-0.5 rounded bg-[#FAF8F5] border border-[#E6E1D8] text-[#1F2421]">
+              <span className="font-mono text-[10.5px] font-bold px-2 py-0.5 rounded bg-[#F7F5EF] border border-[#E7E4DB] text-[#252D27]">
                 {log.actionType}
               </span>
             </td>
 
             {/* Entity Ref */}
-            <td className="py-3 px-4 font-mono text-xs font-bold text-[#1B4532] whitespace-nowrap">
+            <td className="py-3 px-4 font-mono text-xs font-bold text-[#193B2A] whitespace-nowrap">
               {log.entityId}
             </td>
 
             {/* Actor */}
             <td className="py-3 px-4 whitespace-nowrap">
-              <div className="font-semibold text-[#1F2421]">{log.actorName}</div>
-              <div className="text-[10.5px] text-[#718096]">
+              <div className="font-semibold text-[#252D27]">{log.actorName}</div>
+              <div className="text-[10.5px] text-[#737A72]">
                 {log.actorRole} {log.actorBureau ? `· ${log.actorBureau}` : ''}
               </div>
             </td>
 
             {/* Summary & Justification Reason */}
             <td className="py-3 px-4 max-w-sm sm:max-w-md">
-              <div className="font-semibold text-[#1F2421] leading-snug">
+              <div className="font-semibold text-[#252D27] leading-snug">
                 {log.summary}
               </div>
               {log.details?.reason && (
-                <p className="text-[11px] text-[#5C6460] mt-0.5 leading-relaxed italic">
+                <p className="text-[11px] text-[#737A72] mt-0.5 leading-relaxed italic">
                   "{log.details.reason}"
                 </p>
               )}
@@ -220,7 +272,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
             <td className="py-3 px-4 whitespace-nowrap">
               {log.details?.previousValue && log.details?.newValue ? (
                 <div className="flex items-center gap-1.5 text-xs font-mono">
-                  <span className="text-[#718096] bg-[#FAF8F5] px-1.5 py-0.5 rounded border border-[#E6E1D8]">
+                  <span className="text-[#737A72] bg-[#F7F5EF] px-1.5 py-0.5 rounded border border-[#E7E4DB]">
                     {log.details.previousValue}
                   </span>
                   <ArrowRight size={11} className="text-[#94A3B8]" />

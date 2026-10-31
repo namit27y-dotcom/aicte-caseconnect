@@ -76,13 +76,13 @@ export const NewComplaintModal: React.FC<NewComplaintModalProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* Institution selection */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#4A5568] mb-1.5">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#737A72] mb-1.5">
             Affiliated Technical Institute *
           </label>
           <select
             value={institutionId}
             onChange={(e) => setInstitutionId(e.target.value)}
-            className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#1F2421] focus:outline-none focus:border-[#1B4532]"
+            className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
             required
           >
             {SYNTHETIC_INSTITUTIONS.map((inst) => (
@@ -96,13 +96,13 @@ export const NewComplaintModal: React.FC<NewComplaintModalProps> = ({
         {/* Category & Priority Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#4A5568] mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#737A72] mb-1.5">
               Grievance Category *
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as ComplaintCategory)}
-              className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#1F2421] focus:outline-none focus:border-[#1B4532]"
+              className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
             >
               <option value="ADMISSION_FRAUD">Admission Fraud / Capitation</option>
               <option value="RAGGING">Ragging & Student Harassment</option>
@@ -115,13 +115,13 @@ export const NewComplaintModal: React.FC<NewComplaintModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#4A5568] mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#737A72] mb-1.5">
               Urgency / Priority *
             </label>
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as ComplaintPriority)}
-              className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#1F2421] focus:outline-none focus:border-[#1B4532]"
+              className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
             >
               <option value="CRITICAL">Critical (Immediate SLA Trigger)</option>
               <option value="HIGH">High Priority</option>
@@ -134,13 +134,13 @@ export const NewComplaintModal: React.FC<NewComplaintModalProps> = ({
         {/* Complainant Persona */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#4A5568] mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#737A72] mb-1.5">
               Complainant Category
             </label>
             <select
               value={complainantType}
               onChange={(e) => setComplainantType(e.target.value as any)}
-              className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#1F2421] focus:outline-none focus:border-[#1B4532]"
+              className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
             >
               <option value="STUDENT">Student</option>
               <option value="FACULTY">Faculty Member</option>
@@ -175,7 +175,7 @@ export const NewComplaintModal: React.FC<NewComplaintModalProps> = ({
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#4A5568] mb-1.5">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#737A72] mb-1.5">
             Full Factual Statement & Details *
           </label>
           <textarea
@@ -183,7 +183,7 @@ export const NewComplaintModal: React.FC<NewComplaintModalProps> = ({
             placeholder="Describe the incident, names of officials or staff involved, dates, and evidence attachments available..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#1F2421] placeholder-[#A0AEC0] focus:outline-none focus:border-[#1B4532] focus:ring-1 focus:ring-[#1B4532]"
+            className="w-full bg-white border border-[#D5CEC2] rounded-md px-3 py-2 text-xs text-[#252D27] placeholder-[#A0AEC0] focus:outline-none focus:border-[#193B2A] focus:ring-1 focus:ring-[#193B2A]"
             required
           />
         </div>

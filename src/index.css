@@ -1,21 +1,41 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Manrope", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --color-alabaster: #FAF8F5;
-  --color-charcoal: #1F2421;
-  --color-forest-900: #0E2319;
-  --color-forest-800: #1B4532;
-  --color-forest-700: #265E44;
-  --color-forest-600: #337A5A;
-  --color-forest-100: #E6EFEA;
-  --color-forest-50: #F2F7F4;
-  --color-amber-warn: #D4A373;
-  --color-rust-overdue: #9B2226;
-  --color-border-warm: #E6E1D8;
+  /* Strict AICTE Color Palette */
+  --color-forest: #193B2A;
+  --color-deep-green: #142B21;
+  --color-muted-sage: #829B86;
+  --color-warm-ivory: #F7F5EF;
+  --color-soft-beige: #E9E3D6;
+  --color-muted-gold: #C5A568;
+  --color-primary-text: #252D27;
+  --color-secondary-text: #737A72;
+  --color-border-warm: #E7E4DB;
+  --color-danger: #B94F45;
+  --color-warning: #C58B3B;
+  --color-success: #4F8064;
+
+  /* Legacy mappings mapped strictly to new palette */
+  --color-alabaster: #F7F5EF;
+  --color-charcoal: #252D27;
+  --color-forest-900: #142B21;
+  --color-forest-800: #193B2A;
+  --color-forest-700: #1F4A35;
+  --color-forest-600: #2E6B4E;
+  --color-forest-100: #E9EFEA;
+  --color-forest-50: #F3F7F4;
+  --color-amber-warn: #C58B3B;
+  --color-rust-overdue: #B94F45;
   --color-surface-warm: #F7F5EF;
+}
+
+/* Base Headings Rule */
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
 }
 
 /* Custom scrollbars and tabular figures */
@@ -24,16 +44,16 @@
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(31, 36, 33, 0.15);
+  background: rgba(25, 59, 42, 0.2);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(31, 36, 33, 0.3);
+  background: rgba(25, 59, 42, 0.4);
 }

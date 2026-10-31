@@ -189,4 +189,5 @@ export type NavigationTab =
   | 'deadlines'
   | 'analytics'
   | 'audit'
-  | 'administration';
+  | 'administration'
+  | 'settings';

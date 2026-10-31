@@ -328,11 +328,11 @@ export function deriveStatusDistribution(
   if (total === 0) return [];
 
   const counts: Record<string, { count: number; label: string; color: string }> = {
-    SUBMITTED: { count: 0, label: 'Submitted', color: '#2563EB' },
-    UNDER_PROCESS: { count: 0, label: 'Under Process', color: '#0284C7' },
-    COORDINATION: { count: 0, label: 'In Coordination', color: '#7C3AED' },
+    SUBMITTED: { count: 0, label: 'Submitted', color: '#829B86' },
+    UNDER_PROCESS: { count: 0, label: 'Under Process', color: '#193B2A' },
+    COORDINATION: { count: 0, label: 'In Coordination', color: '#C5A568' },
     RESOLUTION_REVIEW: { count: 0, label: 'Resolution Review', color: '#D97706' },
-    CLOSED: { count: 0, label: 'Closed / Disposed', color: '#16A34A' },
+    CLOSED: { count: 0, label: 'Closed / Disposed', color: '#4F8064' },
   };
 
   for (const c of complaints) {

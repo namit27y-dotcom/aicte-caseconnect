@@ -21,14 +21,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     <div
       role="region"
       aria-label="Filter toolbar"
-      className={`bg-white border border-[#E6E1D8] p-3.5 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs shadow-2xs ${className}`}
+      className={`bg-white border border-[#E7E4DB] p-3.5 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs shadow-2xs ${className}`}
     >
       <div className="flex flex-wrap items-center gap-2.5">
         <div className="flex items-center gap-1.5 font-semibold text-[#4A5568] mr-1">
-          <Filter size={14} className="text-[#1B4532]" />
+          <Filter size={14} className="text-[#193B2A]" />
           <span>Filters</span>
           {activeFilterCount > 0 && (
-            <span className="bg-[#1B4532] text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">
+            <span className="bg-[#193B2A] text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">
               {activeFilterCount}
             </span>
           )}
@@ -50,7 +50,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       </div>
 
       {resultSummary && (
-        <div className="text-xs text-[#5C6460] md:text-right shrink-0">
+        <div className="text-xs text-[#737A72] md:text-right shrink-0">
           {resultSummary}
         </div>
       )}

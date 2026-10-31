@@ -18,6 +18,42 @@ import {
 
 export const SYNTHETIC_PERSONAS: UserPersona[] = [
   {
+    id: 'user-rohit-sharma',
+    name: 'Rohit Sharma',
+    email: 'rohit.sharma@aicte-india.org',
+    role: 'BUREAU_OFFICER',
+    roleLabel: 'Officer',
+    bureau: 'APPROVAL_BUREAU',
+    bureauName: 'Approval',
+    avatarInitials: 'RS',
+    status: 'ACTIVE',
+    lastActivity: '2026-10-29T11:45:00Z'
+  },
+  {
+    id: 'user-priya-nair',
+    name: 'Priya Nair',
+    email: 'priya.nair@aicte-india.org',
+    role: 'BUREAU_OFFICER',
+    roleLabel: 'Officer',
+    bureau: 'FINANCE_BUREAU',
+    bureauName: 'Finance',
+    avatarInitials: 'PN',
+    status: 'ACTIVE',
+    lastActivity: '2026-10-29T11:30:00Z'
+  },
+  {
+    id: 'user-vikram-singh',
+    name: 'Vikram Singh',
+    email: 'vikram.singh@aicte-india.org',
+    role: 'BUREAU_OFFICER',
+    roleLabel: 'Officer',
+    bureau: 'POLICY_ACADEMIC',
+    bureauName: 'Governance',
+    avatarInitials: 'VS',
+    status: 'ACTIVE',
+    lastActivity: '2026-10-29T10:50:00Z'
+  },
+  {
     id: 'user-officer-1',
     name: 'Aashish Kumar',
     email: 'aashish.kumar@aicte-india.org',
@@ -831,12 +867,12 @@ export const SYNTHETIC_DASHBOARD_METRICS = {
   disposedComplaints: 32,
   disposedTrend: '+8%',
   statusBreakdown: [
-    { label: 'Submitted', count: 28, percentage: 28, color: '#3B82F6' },
-    { label: 'Under Process', count: 26, percentage: 26, color: '#0EA5E9' },
-    { label: 'Coordination', count: 12, percentage: 12, color: '#8B5CF6' },
+    { label: 'Submitted', count: 28, percentage: 28, color: '#829B86' },
+    { label: 'Under Process', count: 26, percentage: 26, color: '#193B2A' },
+    { label: 'Coordination', count: 12, percentage: 12, color: '#C5A568' },
     { label: 'Resolution Review', count: 8, percentage: 8, color: '#F59E0B' },
-    { label: 'Closed', count: 14, percentage: 14, color: '#10B981' },
-    { label: 'Overdue', count: 12, percentage: 12, color: '#EF4444' }
+    { label: 'Closed', count: 14, percentage: 14, color: '#4F8064' },
+    { label: 'Overdue', count: 12, percentage: 12, color: '#B94F45' }
   ],
   categoryBreakdown: [
     { label: 'Approval & Affiliation', percentage: 22 },

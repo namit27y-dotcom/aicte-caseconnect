@@ -69,11 +69,11 @@ export const LineChart: React.FC<LineChartProps> = ({
       {/* Legend */}
       <div className="flex items-center justify-end gap-4 text-xs mb-2">
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 bg-[#2563EB] inline-block" />
+          <span className="w-3 h-0.5 bg-[#193B2A] inline-block" />
           <span className="text-[#4B5563] font-medium">New Intake</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 bg-[#16A34A] inline-block" />
+          <span className="w-3 h-0.5 bg-[#4F8064] inline-block" />
           <span className="text-[#4B5563] font-medium">Disposed / Closed</span>
         </div>
       </div>
@@ -117,7 +117,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           <path
             d={linePathIntake}
             fill="none"
-            stroke="#2563EB"
+            stroke="#193B2A"
             strokeWidth={2.5}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -125,7 +125,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           <path
             d={linePathResolved}
             fill="none"
-            stroke="#16A34A"
+            stroke="#4F8064"
             strokeWidth={2.5}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -138,7 +138,7 @@ export const LineChart: React.FC<LineChartProps> = ({
               cx={p.x}
               cy={p.y}
               r={hoveredIdx === i ? 5 : 3.5}
-              fill="#2563EB"
+              fill="#193B2A"
               stroke="#FFFFFF"
               strokeWidth={1.5}
               className="cursor-pointer transition-all"
@@ -154,7 +154,7 @@ export const LineChart: React.FC<LineChartProps> = ({
               cx={p.x}
               cy={p.y}
               r={hoveredIdx === i ? 5 : 3.5}
-              fill="#16A34A"
+              fill="#4F8064"
               stroke="#FFFFFF"
               strokeWidth={1.5}
               className="cursor-pointer transition-all"
@@ -187,7 +187,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           <div className="mt-2 p-2 bg-[#1F2421] text-white rounded-md text-xs flex items-center justify-between font-mono">
             <span className="font-sans font-semibold">{data[hoveredIdx].label}:</span>
             <div className="flex gap-4">
-              <span className="text-[#93C5FD]">Intake: {data[hoveredIdx].intake}</span>
+              <span className="text-[#C5A568]">Intake: {data[hoveredIdx].intake}</span>
               <span className="text-[#86EFAC]">Closed: {data[hoveredIdx].resolved}</span>
             </div>
           </div>

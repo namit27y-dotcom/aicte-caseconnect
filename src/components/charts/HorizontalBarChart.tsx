@@ -51,9 +51,9 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
             onMouseLeave={() => setHoveredKey(null)}
             className={`p-2.5 rounded-lg border transition-all ${
               isHovered
-                ? 'bg-[#FAF8F5] border-[#1B4532] shadow-xs'
+                ? 'bg-[#FAF8F5] border-[#193B2A] shadow-xs'
                 : 'bg-white border-[#E6E1D8] hover:border-[#CBD5E1]'
-            } ${onSelectBar ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1B4532]' : ''}`}
+            } ${onSelectBar ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#193B2A]' : ''}`}
             aria-label={`${item.label}: ${item.total} total cases, ${item.open} open, ${item.overdue} overdue, ${item.resolved} resolved`}
           >
             <div className="flex items-center justify-between text-xs mb-1.5">
@@ -64,7 +64,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                 <span className="text-[#1F2421] font-bold">{item.total} total</span>
                 <span className="text-[#718096]">({item.open} open)</span>
                 {item.overdue > 0 && (
-                  <span className="text-[#DC2626] font-semibold flex items-center gap-0.5 bg-[#FEF2F2] px-1.5 py-0.2 rounded border border-[#FECACA]">
+                  <span className="text-[#B94F45] font-semibold flex items-center gap-0.5 bg-[#B94F45]/10 px-1.5 py-0.2 rounded border border-[#B94F45]/30">
                     <AlertTriangle size={10} />
                     {item.overdue} overdue
                   </span>
@@ -82,7 +82,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   {/* Resolved segment */}
                   {item.resolved > 0 && (
                     <div
-                      className="bg-[#16A34A] h-full"
+                      className="bg-[#4F8064] h-full"
                       style={{ width: `${(item.resolved / item.total) * 100}%` }}
                       title={`Resolved: ${item.resolved}`}
                     />
@@ -90,7 +90,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   {/* Open on-schedule segment */}
                   {item.open - item.overdue > 0 && (
                     <div
-                      className="bg-[#2563EB] h-full"
+                      className="bg-[#193B2A] h-full"
                       style={{ width: `${((item.open - item.overdue) / item.total) * 100}%` }}
                       title={`Active: ${item.open - item.overdue}`}
                     />
@@ -98,7 +98,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   {/* Overdue segment */}
                   {item.overdue > 0 && (
                     <div
-                      className="bg-[#DC2626] h-full"
+                      className="bg-[#B94F45] h-full"
                       style={{ width: `${(item.overdue / item.total) * 100}%` }}
                       title={`Overdue: ${item.overdue}`}
                     />

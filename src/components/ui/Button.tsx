@@ -19,17 +19,17 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shrink-0 cursor-pointer';
 
   const sizeClasses = {
-    sm: 'text-xs px-2.5 py-1.5 gap-1.5 rounded-md',
-    md: 'text-sm px-3.5 py-2 gap-2 rounded-md',
-    lg: 'text-base px-5 py-2.5 gap-2.5 rounded-lg',
+    sm: 'text-xs px-2.5 py-1.5 gap-1.5 rounded-lg',
+    md: 'text-sm px-3.5 py-2 gap-2 rounded-lg',
+    lg: 'text-base px-5 py-2.5 gap-2.5 rounded-xl',
   };
 
   const variantClasses = {
-    primary: 'bg-[#1B4532] text-white hover:bg-[#153728] active:bg-[#0f281d] focus-visible:ring-[#1B4532] border border-[#1B4532] shadow-xs',
-    secondary: 'bg-[#F2EFE9] text-[#1F2421] hover:bg-[#EAE5DC] active:bg-[#DDD7CC] focus-visible:ring-[#1F2421] border border-[#E6E1D8]',
-    outline: 'bg-transparent text-[#1F2421] hover:bg-[#F2EFE9] active:bg-[#EAE5DC] focus-visible:ring-[#1B4532] border border-[#D5CEC2]',
-    danger: 'bg-[#9B2226] text-white hover:bg-[#851D20] active:bg-[#6E181B] focus-visible:ring-[#9B2226] border border-[#9B2226]',
-    ghost: 'bg-transparent text-[#4A5568] hover:text-[#1F2421] hover:bg-black/5 active:bg-black/10 focus-visible:ring-[#1B4532] border border-transparent',
+    primary: 'bg-[#193B2A] text-white hover:bg-[#142B21] active:bg-[#0E2319] focus-visible:ring-[#193B2A] border border-[#193B2A] shadow-2xs',
+    secondary: 'bg-[#F7F5EF] text-[#252D27] hover:bg-[#E9E3D6] active:bg-[#DDD7CC] focus-visible:ring-[#193B2A] border border-[#E7E4DB]',
+    outline: 'bg-transparent text-[#252D27] hover:bg-[#F7F5EF] active:bg-[#E9E3D6] focus-visible:ring-[#193B2A] border border-[#E7E4DB]',
+    danger: 'bg-[#B94F45] text-white hover:bg-[#9E3E35] active:bg-[#7D322B] focus-visible:ring-[#B94F45] border border-[#B94F45]',
+    ghost: 'bg-transparent text-[#737A72] hover:text-[#252D27] hover:bg-black/5 active:bg-black/10 focus-visible:ring-[#193B2A] border border-transparent',
   };
 
   return (

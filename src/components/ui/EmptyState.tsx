@@ -24,11 +24,11 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       role="status"
       className={`py-12 px-4 flex flex-col items-center justify-center text-center max-w-md mx-auto ${className}`}
     >
-      <div className="w-14 h-14 rounded-full bg-[#FAF8F5] border border-[#E6E1D8] flex items-center justify-center mb-3">
+      <div className="w-14 h-14 rounded-full bg-[#F7F5EF] border border-[#E7E4DB] flex items-center justify-center mb-3">
         {icon}
       </div>
-      <h3 className="text-sm font-bold text-[#1F2421]">{title}</h3>
-      <p className="text-xs text-[#5C6460] mt-1 leading-relaxed">{description}</p>
+      <h3 className="text-sm font-bold text-[#252D27]">{title}</h3>
+      <p className="text-xs text-[#737A72] mt-1 leading-relaxed">{description}</p>
       {actionLabel && onAction && (
         <Button variant="outline" size="sm" onClick={onAction} className="mt-4">
           {actionLabel}

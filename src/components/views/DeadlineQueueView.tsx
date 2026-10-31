@@ -48,6 +48,7 @@ export const DeadlineQueueView: React.FC<DeadlineQueueViewProps> = ({
 
   const now = getNow();
   const kpis = deriveCaseKPIs(complaints, deadlineRules, now);
+  const complianceRate = kpis.total > 0 ? Math.round(((kpis.total - kpis.overdue) / kpis.total) * 100) : 100;
 
   const activeComplaints = complaints.filter((c) => c.status !== 'CLOSED');
 
@@ -63,111 +64,102 @@ export const DeadlineQueueView: React.FC<DeadlineQueueViewProps> = ({
 
   return (
     <div className="space-y-5">
-      {/* View Header */}
-      <PageHeader
-        title="Statutory Deadline & SLA Escalation Queue"
-        subtitle="Enforcing time-bound resolution across technical institutions pursuant to AICTE Regulations"
-        actions={
-          <div className="flex items-center gap-1 bg-[#EAE5DC] p-1 rounded-lg text-xs font-medium">
-            <button
-              onClick={() => setFilterState('ALL')}
-              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
-                filterState === 'ALL' ? 'bg-white text-[#1F2421] shadow-xs font-semibold' : 'text-[#5C6460] hover:text-[#1F2421]'
-              }`}
-            >
-              All Active ({activeComplaints.length})
-            </button>
-            <button
-              onClick={() => setFilterState('OVERDUE')}
-              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
-                filterState === 'OVERDUE' ? 'bg-[#DC2626] text-white shadow-xs font-semibold' : 'text-[#DC2626] hover:bg-white/50'
-              }`}
-            >
-              Overdue ({kpis.overdue})
-            </button>
-            <button
-              onClick={() => setFilterState('DUE_SOON')}
-              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
-                filterState === 'DUE_SOON' ? 'bg-[#D97706] text-white shadow-xs font-semibold' : 'text-[#D97706] hover:bg-white/50'
-              }`}
-            >
-              Due Soon ({kpis.dueSoon})
-            </button>
-            <button
-              onClick={() => setFilterState('ON_SCHEDULE')}
-              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
-                filterState === 'ON_SCHEDULE' ? 'bg-[#16A34A] text-white shadow-xs font-semibold' : 'text-[#16A34A] hover:bg-white/50'
-              }`}
-            >
-              On Schedule ({kpis.onSchedule})
-            </button>
-          </div>
-        }
-      />
+      {/* 1. Top Section Header Matching Reference Image 1 & 2 */}
+      <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs relative overflow-hidden">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#252D27] font-heading">
+            Alerts & SLA
+          </h1>
+          <p className="text-xs text-[#737A72] mt-0.5">
+            Monitor statutory timeframes and escalation milestones
+          </p>
+        </div>
 
-      {/* SLA Tiers Overview (Derived Numbers) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Overdue Card */}
-        <div
+        {/* Action pills filter in header */}
+        <div className="flex items-center gap-1 bg-[#EAE5DC] p-1 rounded-xl text-xs font-medium">
+          <button
+            onClick={() => setFilterState('ALL')}
+            className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              filterState === 'ALL' ? 'bg-white text-[#252D27] shadow-xs font-semibold' : 'text-[#737A72] hover:text-[#252D27]'
+            }`}
+          >
+            All Active ({activeComplaints.length})
+          </button>
+          <button
+            onClick={() => setFilterState('OVERDUE')}
+            className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              filterState === 'OVERDUE' ? 'bg-[#B94F45] text-white shadow-xs font-semibold' : 'text-[#B94F45] hover:bg-white/50'
+            }`}
+          >
+            Overdue ({kpis.overdue})
+          </button>
+          <button
+            onClick={() => setFilterState('DUE_SOON')}
+            className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              filterState === 'DUE_SOON' ? 'bg-[#C58B3B] text-white shadow-xs font-semibold' : 'text-[#C58B3B] hover:bg-white/50'
+            }`}
+          >
+            Due Soon ({kpis.dueSoon})
+          </button>
+          <button
+            onClick={() => setFilterState('ON_SCHEDULE')}
+            className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              filterState === 'ON_SCHEDULE' ? 'bg-[#193B2A] text-white shadow-xs font-semibold' : 'text-[#193B2A] hover:bg-white/50'
+            }`}
+          >
+            On Schedule ({kpis.onSchedule})
+          </button>
+        </div>
+      </div>
+
+      {/* 2. 4 KPI Cards Matching Reference Image 1 & 2 */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div 
+          onClick={() => setFilterState('ALL')}
+          className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs cursor-pointer hover:border-[#193B2A] transition-colors"
+        >
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            {activeComplaints.length}
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Total Active
+          </div>
+        </div>
+
+        <div 
           onClick={() => setFilterState('OVERDUE')}
-          className={`p-4 rounded-xl border transition-all cursor-pointer ${
-            filterState === 'OVERDUE'
-              ? 'bg-[#FEF2F2] border-[#DC2626] ring-1 ring-[#DC2626]'
-              : 'bg-white border-[#FECACA] hover:border-[#DC2626]'
-          }`}
+          className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs cursor-pointer hover:border-[#B94F45] transition-colors"
         >
-          <div className="flex items-center justify-between text-xs text-[#DC2626] font-semibold">
-            <span className="flex items-center gap-1.5 font-bold">
-              <AlertTriangle size={15} />
-              SLA Overdue Breach
-            </span>
-            <span className="font-mono text-xl font-bold">{kpis.overdue} cases</span>
+          <div className="text-2xl sm:text-3xl font-bold text-[#B94F45] font-heading">
+            {kpis.overdue}
           </div>
-          <p className="text-[11px] text-[#991B1B] mt-1.5 leading-relaxed">
-            Statutory timeline exceeded. Bureau Head intervention and formal show-cause dispatch permitted.
-          </p>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Overdue SLA
+          </div>
         </div>
 
-        {/* Due Soon Card */}
-        <div
+        <div 
           onClick={() => setFilterState('DUE_SOON')}
-          className={`p-4 rounded-xl border transition-all cursor-pointer ${
-            filterState === 'DUE_SOON'
-              ? 'bg-[#FFFBEB] border-[#D97706] ring-1 ring-[#D97706]'
-              : 'bg-white border-[#FDE68A] hover:border-[#D97706]'
-          }`}
+          className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs cursor-pointer hover:border-[#C58B3B] transition-colors"
         >
-          <div className="flex items-center justify-between text-xs text-[#D97706] font-semibold">
-            <span className="flex items-center gap-1.5 font-bold">
-              <Clock size={15} />
-              Approaching SLA Deadline
-            </span>
-            <span className="font-mono text-xl font-bold">{kpis.dueSoon} cases</span>
+          <div className="text-2xl sm:text-3xl font-bold text-[#C58B3B] font-heading">
+            {kpis.dueSoon}
           </div>
-          <p className="text-[11px] text-[#92400E] mt-1.5 leading-relaxed">
-            Within active rule warning threshold. Assigned officers must fast-track inquiry documentation.
-          </p>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Due Soon
+          </div>
         </div>
 
-        {/* On Schedule Card */}
-        <div
+        <div 
           onClick={() => setFilterState('ON_SCHEDULE')}
-          className={`p-4 rounded-xl border transition-all cursor-pointer ${
-            filterState === 'ON_SCHEDULE'
-              ? 'bg-[#F0FDF4] border-[#16A34A] ring-1 ring-[#16A34A]'
-              : 'bg-white border-[#BBF7D0] hover:border-[#16A34A]'
-          }`}
+          className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs cursor-pointer hover:border-[#4F8064] transition-colors"
         >
-          <div className="flex items-center justify-between text-xs text-[#16A34A] font-semibold">
-            <span className="flex items-center gap-1.5 font-bold">
-              <CheckCircle2 size={15} />
-              Comfortably on Schedule
-            </span>
-            <span className="font-mono text-xl font-bold">{kpis.onSchedule} cases</span>
+          <div className="text-2xl sm:text-3xl font-bold text-[#4F8064] font-heading">
+            {complianceRate}%
           </div>
-          <p className="text-[11px] text-[#166534] mt-1.5 leading-relaxed">
-            Grievances progressing within statutory resolution duration window.
-          </p>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            SLA Compliance
+          </div>
         </div>
       </div>
 
@@ -202,27 +194,27 @@ export const DeadlineQueueView: React.FC<DeadlineQueueViewProps> = ({
             <tr
               key={c.id}
               onClick={() => onSelectComplaint(c)}
-              className="hover:bg-[#FAF8F5] transition-colors cursor-pointer group"
+              className="hover:bg-[#F7F5EF] transition-colors cursor-pointer group"
             >
               {/* Tracking ID */}
-              <td className="py-3 px-4 font-mono font-bold text-[#1B4532] whitespace-nowrap">
+              <td className="py-3 px-4 font-mono font-bold text-[#193B2A] whitespace-nowrap">
                 {c.trackingNumber}
               </td>
 
               {/* Institution */}
               <td className="py-3 px-4 max-w-xs sm:max-w-md">
-                <div className="font-semibold text-[#1F2421] truncate group-hover:text-[#1B4532]">
+                <div className="font-semibold text-[#252D27] truncate group-hover:text-[#193B2A]">
                   {c.institutionName}
                 </div>
-                <span className="text-[10.5px] text-[#718096] block mt-0.5">
+                <span className="text-[10.5px] text-[#737A72] block mt-0.5">
                   {c.categoryLabel} · {c.institutionState}
                 </span>
               </td>
 
               {/* Bureau */}
               <td className="py-3 px-4 whitespace-nowrap">
-                <div className="font-medium text-[#1F2421]">{c.bureauName}</div>
-                <div className="text-[11px] text-[#718096] mt-0.5">
+                <div className="font-medium text-[#252D27]">{c.bureauName}</div>
+                <div className="text-[11px] text-[#737A72] mt-0.5">
                   {c.assignedOfficerName || 'Unassigned'}
                 </div>
               </td>
@@ -240,16 +232,16 @@ export const DeadlineQueueView: React.FC<DeadlineQueueViewProps> = ({
               {/* Remaining Window */}
               <td className="py-3 px-4 whitespace-nowrap">
                 {overdue ? (
-                  <span className="font-bold text-[#DC2626] flex items-center gap-1 font-mono text-xs">
+                  <span className="font-bold text-[#B94F45] flex items-center gap-1 font-mono text-xs">
                     <AlertTriangle size={12} />
                     {Math.abs(daysLeft)} days overdue
                   </span>
                 ) : daysLeft <= 7 ? (
-                  <span className="font-semibold text-[#D97706] font-mono text-xs">
+                  <span className="font-semibold text-[#C58B3B] font-mono text-xs">
                     {daysLeft} days left
                   </span>
                 ) : (
-                  <span className="text-[#16A34A] font-mono text-xs">
+                  <span className="text-[#4F8064] font-mono text-xs">
                     {daysLeft} days left
                   </span>
                 )}

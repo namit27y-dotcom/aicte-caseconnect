@@ -113,33 +113,33 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   const isBureauHead = currentPersona.role === 'BUREAU_HEAD';
   const isApexAdmin = currentPersona.role === 'APEX_ADMIN';
 
-  // Guard: Complainant and Bureau Officers cannot access Administration
-  if (isComplainant || isOfficer) {
+  // Guard: Complainant cannot access Administration
+  if (isComplainant) {
     const adminAccess = can(currentPersona, 'VIEW_ADMIN');
     return (
       <div className="space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E6E1D8]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E7E4DB]">
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-[#0F172A]">
-              System Administration &amp; Governance
+            <h2 className="text-xl font-bold tracking-tight text-[#252D27]">
+              Administration
             </h2>
-            <p className="text-xs text-[#64748B] mt-0.5">
-              Restricted institutional settings and governance policies
+            <p className="text-xs text-[#737A72] mt-0.5">
+              User management, role permissions and SLA rule configuration.
             </p>
           </div>
         </div>
-        <div className="p-8 bg-white border border-[#FECACA] rounded-xl text-center max-w-lg mx-auto shadow-sm">
-          <div className="w-12 h-12 rounded-full bg-[#FEF2F2] flex items-center justify-center text-[#DC2626] mx-auto mb-3">
+        <div className="p-8 bg-white border border-[#B94F45/30] rounded-xl text-center max-w-lg mx-auto shadow-sm">
+          <div className="w-12 h-12 rounded-full bg-[#B94F45/10] flex items-center justify-center text-[#B94F45] mx-auto mb-3">
             <Lock size={22} />
           </div>
-          <h3 className="text-base font-bold text-[#1F2421]">Administrative Access Restricted</h3>
-          <p className="text-xs text-[#5C6460] mt-1.5 leading-relaxed">
+          <h3 className="text-base font-bold text-[#252D27]">Administrative Access Restricted</h3>
+          <p className="text-xs text-[#737A72] mt-1.5 leading-relaxed">
             {adminAccess.reason || 'System administration requires Bureau Head or Apex Admin privileges.'}
           </p>
-          <span className="text-[11px] text-[#718096] block mt-3 font-mono">
+          <span className="text-[11px] text-[#737A72] block mt-3 font-mono">
             Current Persona: {currentPersona.name} ({currentPersona.roleLabel})
           </span>
-          <p className="text-[11px] text-[#718096] mt-2">
+          <p className="text-[11px] text-[#737A72] mt-2">
             Tip: Switch your demo persona to <strong>Prof. R. K. Verma (Apex Admin)</strong> using the role switcher in the sidebar.
           </p>
         </div>
@@ -654,8 +654,8 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         <div
           className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl border shadow-xl flex items-center gap-2.5 text-xs font-medium transition-all ${
             toastMessage.type === 'success'
-              ? 'bg-[#154636] text-white border-[#1E5C47]'
-              : 'bg-[#DC2626] text-white border-[#B91C1C]'
+              ? 'bg-[#193B2A] text-white border-[#1E5C47]'
+              : 'bg-[#B94F45] text-white border-[#B91C1C]'
           }`}
         >
           {toastMessage.type === 'success' ? <Check size={16} /> : <AlertTriangle size={16} />}
@@ -663,66 +663,126 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E6E1D8]">
+      {/* 1. Top Section Header with Conference Banner as in Reference Image 1 & 2 */}
+      <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs relative overflow-hidden">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold tracking-tight text-[#0F172A]">
-              System Administration & Governance
-            </h2>
-            <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-xs bg-[#EAF5EE] text-[#155836] border border-[#D1E7D9]">
-              {currentPersona.roleLabel}
-            </span>
-          </div>
-          <p className="text-xs text-[#64748B] mt-0.5">
-            Role-Based Access Control (RBAC), configurable statutory SLA rules, and prototype user management • SIH26264
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#252D27] font-heading">
+            Users & Officers
+          </h1>
+          <p className="text-xs text-[#737A72] mt-0.5">
+            Manage access and roles
           </p>
         </div>
 
-        {/* Sub-tab navigation (Reordered: User Management -> Role Permissions -> SLA Configuration) */}
+        {/* Thumbnail preview photograph & Add User on right */}
+        <div className="flex items-center gap-3">
+          <div className="hidden md:block w-36 h-16 rounded-lg overflow-hidden border border-[#E7E4DB]">
+            <img 
+              src="/assets/banner-users.jpg" 
+              alt="Users and Officers" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <button 
+            onClick={() => setIsAddUserModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#193B2A] text-white text-xs font-semibold hover:bg-[#142B21] transition-colors cursor-pointer shadow-xs shrink-0"
+          >
+            <Plus size={14} />
+            <span>Add User</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 2. 4 KPI Cards Matching Reference Image 1 (Total 124, Active 110, Pending 8, Admins 6) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs">
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            124
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Total
+          </div>
+        </div>
+
+        <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs">
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            110
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Active
+          </div>
+        </div>
+
+        <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs">
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            8
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Pending
+          </div>
+        </div>
+
+        <div className="bg-white border border-[#E7E4DB] rounded-xl p-4 shadow-2xs">
+          <div className="text-2xl sm:text-3xl font-bold text-[#252D27] font-heading">
+            6
+          </div>
+          <div className="text-xs font-medium text-[#737A72] mt-0.5">
+            Admins
+          </div>
+        </div>
+      </div>
+
+      {/* Sub-tab navigation and Officer Mode pill */}
+      <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
         <div className="flex items-center gap-1 bg-[#EAE5DC] p-1 rounded-xl text-xs font-medium">
           <button
             onClick={() => setActiveAdminTab('USER_MANAGEMENT')}
             className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
               activeAdminTab === 'USER_MANAGEMENT'
-                ? 'bg-white text-[#0F172A] shadow-xs font-semibold'
-                : 'text-[#64748B] hover:text-[#0F172A]'
+                ? 'bg-white text-[#252D27] shadow-xs font-semibold'
+                : 'text-[#737A72] hover:text-[#252D27]'
             }`}
           >
-            1. User Directory ({users.length})
+            Users & Officers ({users.length})
           </button>
           <button
             onClick={() => setActiveAdminTab('RBAC')}
             className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
               activeAdminTab === 'RBAC'
-                ? 'bg-white text-[#0F172A] shadow-xs font-semibold'
-                : 'text-[#64748B] hover:text-[#0F172A]'
+                ? 'bg-white text-[#252D27] shadow-xs font-semibold'
+                : 'text-[#737A72] hover:text-[#252D27]'
             }`}
           >
-            2. Role Permissions
+            Role Permissions (RBAC)
           </button>
           <button
             onClick={() => setActiveAdminTab('SLA_RULES')}
             className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
               activeAdminTab === 'SLA_RULES'
-                ? 'bg-white text-[#0F172A] shadow-xs font-semibold'
-                : 'text-[#64748B] hover:text-[#0F172A]'
+                ? 'bg-white text-[#252D27] shadow-xs font-semibold'
+                : 'text-[#737A72] hover:text-[#252D27]'
             }`}
           >
-            3. SLA Configuration ({deadlineRules.length})
+            SLA Configuration ({deadlineRules.length})
           </button>
         </div>
+
+        {isOfficer && (
+          <span className="text-[11px] text-[#737A72] bg-[#F7F5EF] border border-[#E7E4DB] px-2.5 py-1 rounded-md">
+            Officer Mode: Read-only directory view
+          </span>
+        )}
       </div>
 
       {/* In-Memory Prototype Governance Disclaimer */}
-      <div className="p-3 bg-[#FAF8F5] border border-[#E6E1D8] rounded-lg text-xs text-[#5C6460] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="p-3 bg-[#F7F5EF] border border-[#E7E4DB] rounded-lg text-xs text-[#737A72] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Shield size={15} className="text-[#154636] shrink-0" />
+          <Shield size={15} className="text-[#193B2A] shrink-0" />
           <span>
             <strong>IN-MEMORY PROTOTYPE NOTICE:</strong> All edits to users, permissions, and SLA benchmarks modify live in-memory state and log append-only audit events for this session. Changes are not persisted to an external database.
           </span>
         </div>
-        <span className="font-mono text-[11px] text-[#718096] shrink-0">
+        <span className="font-mono text-[11px] text-[#737A72] shrink-0">
           Actor: {currentPersona.name} ({currentPersona.roleLabel})
         </span>
       </div>
@@ -732,42 +792,42 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         <div className="space-y-4">
           {/* Plain language role summaries */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-white border border-[#E6E1D8] rounded-xl space-y-1.5 shadow-2xs">
+            <div className="p-4 bg-white border border-[#E7E4DB] rounded-xl space-y-1.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-xs text-[#1F2421]">Complainant (Student / Citizen)</span>
-                <span className="text-[10px] bg-[#FAF8F5] text-[#5C6460] px-2 py-0.5 rounded border border-[#E6E1D8]">External</span>
+                <span className="font-bold text-xs text-[#252D27]">Complainant (Student / Citizen)</span>
+                <span className="text-[10px] bg-[#F7F5EF] text-[#737A72] px-2 py-0.5 rounded border border-[#E7E4DB]">External</span>
               </div>
-              <p className="text-xs text-[#5C6460] leading-relaxed">
+              <p className="text-xs text-[#737A72] leading-relaxed">
                 Can submit grievances, upload evidence, and track the status of their own submitted cases. Strictly restricted from viewing grievances filed by others, modifying workflow statuses, or accessing internal coordination tools.
               </p>
             </div>
 
-            <div className="p-4 bg-white border border-[#E6E1D8] rounded-xl space-y-1.5 shadow-2xs">
+            <div className="p-4 bg-white border border-[#E7E4DB] rounded-xl space-y-1.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-xs text-[#1F2421]">Bureau Officer (Scrutiny & Inquiry)</span>
-                <span className="text-[10px] bg-[#EBF3EE] text-[#1B4532] px-2 py-0.5 rounded border border-[#CDE1D5]">Operational</span>
+                <span className="font-bold text-xs text-[#252D27]">Bureau Officer (Scrutiny & Inquiry)</span>
+                <span className="text-[10px] bg-[#EBF3EE] text-[#193B2A] px-2 py-0.5 rounded border border-[#CDE1D5]">Operational</span>
               </div>
-              <p className="text-xs text-[#5C6460] leading-relaxed">
+              <p className="text-xs text-[#737A72] leading-relaxed">
                 Attached to specific regulatory bureaus. Can triage assigned complaints, log investigative notes, transition workflow statuses within their designated bureau, and review cross-bureau overlap recommendations.
               </p>
             </div>
 
-            <div className="p-4 bg-white border border-[#E6E1D8] rounded-xl space-y-1.5 shadow-2xs">
+            <div className="p-4 bg-white border border-[#E7E4DB] rounded-xl space-y-1.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-xs text-[#1F2421]">Bureau Head (Departmental Authority)</span>
+                <span className="font-bold text-xs text-[#252D27]">Bureau Head (Departmental Authority)</span>
                 <span className="text-[10px] bg-[#F5F3FF] text-[#6D28D9] px-2 py-0.5 rounded border border-[#DDD6FE]">Supervisory</span>
               </div>
-              <p className="text-xs text-[#5C6460] leading-relaxed">
+              <p className="text-xs text-[#737A72] leading-relaxed">
                 Oversees bureau caseload and scrutiny officers. Holds authority to dispatch formal statutory SLA escalation notices for overdue cases, sign off on resolution reviews, and access administration screens.
               </p>
             </div>
 
-            <div className="p-4 bg-white border border-[#E6E1D8] rounded-xl space-y-1.5 shadow-2xs">
+            <div className="p-4 bg-white border border-[#E7E4DB] rounded-xl space-y-1.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-xs text-[#1F2421]">Apex Admin (AICTE Headquarters)</span>
-                <span className="text-[10px] bg-[#FEF2F2] text-[#DC2626] px-2 py-0.5 rounded border border-[#FECACA]">Full Authority</span>
+                <span className="font-bold text-xs text-[#252D27]">Apex Admin (AICTE Headquarters)</span>
+                <span className="text-[10px] bg-[#B94F45/10] text-[#B94F45] px-2 py-0.5 rounded border border-[#B94F45/30]">Full Authority</span>
               </div>
-              <p className="text-xs text-[#5C6460] leading-relaxed">
+              <p className="text-xs text-[#737A72] leading-relaxed">
                 Universal oversight across all AICTE bureaus. Can transfer cases across bureaus, dispatch escalation notices for any case, configure statutory SLA duration rules, and manage user accounts.
               </p>
             </div>
@@ -775,12 +835,12 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
           {/* Granular Matrix in Expander */}
           <Card>
-            <div className="p-4 border-b border-[#E6E1D8] bg-[#FAF8F5] flex items-center justify-between">
+            <div className="p-4 border-b border-[#E7E4DB] bg-[#F7F5EF] flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={18} className="text-[#154636]" />
+                <ShieldCheck size={18} className="text-[#193B2A]" />
                 <div>
-                  <h3 className="text-sm font-bold text-[#1F2421]">Full Functional Access Control Matrix</h3>
-                  <p className="text-xs text-[#5C6460]">13 granular functional capabilities across all AICTE CaseConnect roles</p>
+                  <h3 className="text-sm font-bold text-[#252D27]">Full Functional Access Control Matrix</h3>
+                  <p className="text-xs text-[#737A72]">13 granular functional capabilities across all AICTE CaseConnect roles</p>
                 </div>
               </div>
 
@@ -798,7 +858,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="bg-[#FAF8F5] border-b border-[#E6E1D8] text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                    <tr className="bg-[#F7F5EF] border-b border-[#E7E4DB] text-[11px] font-semibold text-[#737A72] uppercase tracking-wider">
                       <th className="py-3 px-4 w-1/3">Capability / Operation</th>
                       <th className="py-3 px-4 text-center">Complainant</th>
                       <th className="py-3 px-4 text-center">Bureau Officer</th>
@@ -808,12 +868,12 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#E6E1D8]">
+                  <tbody className="divide-y divide-[#E7E4DB]">
                     {permissionsMatrix.map((row) => (
-                      <tr key={row.id} className="hover:bg-[#FAF8F5]/80 transition-colors">
+                      <tr key={row.id} className="hover:bg-[#F7F5EF]/80 transition-colors">
                         <td className="py-3 px-4">
-                          <div className="font-bold text-[#0F172A]">{row.capability}</div>
-                          <div className="text-[11px] text-[#64748B] mt-0.5">{row.description}</div>
+                          <div className="font-bold text-[#252D27]">{row.capability}</div>
+                          <div className="text-[11px] text-[#737A72] mt-0.5">{row.description}</div>
                         </td>
 
                         <td className="py-3 px-4 text-center whitespace-nowrap">
@@ -848,7 +908,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             <CardHeader
               title={
                 <div className="flex items-center gap-2">
-                  <Sliders size={18} className="text-[#154636]" />
+                  <Sliders size={18} className="text-[#193B2A]" />
                   <span>Statutory SLA Rules & Escalation Tiers</span>
                 </div>
               }
@@ -877,7 +937,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#FAF8F5] border-b border-[#E6E1D8] text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                  <tr className="bg-[#F7F5EF] border-b border-[#E7E4DB] text-[11px] font-semibold text-[#737A72] uppercase tracking-wider">
                     <th className="py-3 px-4">Rule Name & Category</th>
                     <th className="py-3 px-4">Bureau</th>
                     <th className="py-3 px-4">Priority</th>
@@ -888,17 +948,17 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E6E1D8]">
+                <tbody className="divide-y divide-[#E7E4DB]">
                   {deadlineRules.map((rule) => (
                     <tr
                       key={rule.id}
-                      className={`hover:bg-[#FAF8F5] transition-colors ${
+                      className={`hover:bg-[#F7F5EF] transition-colors ${
                         !rule.isActive ? 'opacity-60 bg-[#F8FAFC]' : ''
                       }`}
                     >
                       <td className="py-3.5 px-4">
-                        <div className="font-bold text-[#0F172A]">{rule.name}</div>
-                        <div className="text-[11px] text-[#64748B] mt-0.5">
+                        <div className="font-bold text-[#252D27]">{rule.name}</div>
+                        <div className="text-[11px] text-[#737A72] mt-0.5">
                           Category: {rule.categoryName}
                         </div>
                       </td>
@@ -919,11 +979,11 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                         {rule.defaultDurationDays} Days
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap text-[#64748B]">
+                      <td className="py-3.5 px-4 whitespace-nowrap text-[#737A72]">
                         &lt; {rule.warningThresholdDays} Days remaining
                       </td>
 
-                      <td className="py-3.5 px-4 text-[#0F172A]">
+                      <td className="py-3.5 px-4 text-[#252D27]">
                         {rule.escalationTarget}
                       </td>
 
@@ -933,7 +993,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                           className={`text-xs px-2.5 py-0.5 rounded-full font-medium transition-colors cursor-pointer ${
                             rule.isActive
                               ? 'bg-[#EAF5EE] text-[#155836] border border-[#D1E7D9]'
-                              : 'bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0]'
+                              : 'bg-[#F1F5F9] text-[#737A72] border border-[#E2E8F0]'
                           }`}
                         >
                           {rule.isActive ? 'Active' : 'Disabled'}
@@ -953,7 +1013,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-[#DC2626] hover:bg-[#FEE2E2]"
+                            className="text-[#B94F45] hover:bg-[#B94F45/15]"
                             icon={<Trash2 size={13} />}
                             onClick={() => handleDeleteRule(rule)}
                           >
@@ -977,7 +1037,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             <CardHeader
               title={
                 <div className="flex items-center gap-2">
-                  <Users size={18} className="text-[#154636]" />
+                  <Users size={18} className="text-[#193B2A]" />
                   <span>AICTE CaseConnect User Directory</span>
                 </div>
               }
@@ -996,7 +1056,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             />
 
             {/* User Search & Filters */}
-            <div className="p-4 border-b border-[#E6E1D8] bg-[#FAF8F5] flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="p-4 border-b border-[#E7E4DB] bg-[#F7F5EF] flex flex-wrap items-center justify-between gap-3 text-xs">
               <div className="relative w-full sm:w-64">
                 <Search size={14} className="absolute left-3 top-2.5 text-[#94A3B8]" />
                 <input
@@ -1004,7 +1064,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                   placeholder="Search user name, email..."
                   value={userSearchQuery}
                   onChange={(e) => setUserSearchQuery(e.target.value)}
-                  className="w-full bg-white border border-[#DFE3DC] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+                  className="w-full bg-white border border-[#DFE3DC] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
                 />
               </div>
 
@@ -1012,7 +1072,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 <select
                   value={userRoleFilter}
                   onChange={(e) => setUserRoleFilter(e.target.value)}
-                  className="bg-white border border-[#DFE3DC] rounded-lg px-2.5 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+                  className="bg-white border border-[#DFE3DC] rounded-lg px-2.5 py-1.5 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
                 >
                   <option value="ALL">All Roles ({users.length})</option>
                   <option value="COMPLAINANT">Complainant</option>
@@ -1024,7 +1084,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 <select
                   value={userStatusFilter}
                   onChange={(e) => setUserStatusFilter(e.target.value)}
-                  className="bg-white border border-[#DFE3DC] rounded-lg px-2.5 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+                  className="bg-white border border-[#DFE3DC] rounded-lg px-2.5 py-1.5 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
                 >
                   <option value="ALL">All Account Statuses</option>
                   <option value="ACTIVE">Active</option>
@@ -1034,89 +1094,91 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
               </div>
             </div>
 
-            {/* Users Table */}
+            {/* Users Table Matching Reference Image 1 & 2 */}
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#FAF8F5] border-b border-[#E6E1D8] text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
-                    <th className="py-3 px-4">User Identity</th>
-                    <th className="py-3 px-4">Demo Email</th>
-                    <th className="py-3 px-4">Assigned Role</th>
-                    <th className="py-3 px-4">Bureau Affiliation</th>
+                  <tr className="bg-[#F7F5EF] border-b border-[#E7E4DB] text-[11px] font-semibold text-[#737A72] uppercase tracking-wider">
+                    <th className="py-3 px-4">Name</th>
+                    <th className="py-3 px-4">Role</th>
+                    <th className="py-3 px-4">Bureau</th>
                     <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4">Last Activity</th>
-                    <th className="py-3 px-4 text-right">Administrative Actions</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E6E1D8]">
+                <tbody className="divide-y divide-[#E7E4DB]">
                   {filteredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-[#64748B]">
+                      <td colSpan={5} className="py-8 text-center text-[#737A72]">
                         No users match the search filter.
                       </td>
                     </tr>
                   ) : (
-                    filteredUsers.map((u) => (
-                      <tr key={u.id} className="hover:bg-[#FAF8F5] transition-colors">
-                        <td className="py-3.5 px-4 font-semibold text-[#0F172A]">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-7 h-7 rounded-full bg-[#154636] text-white flex items-center justify-center font-bold text-xs shrink-0">
-                              {u.avatarInitials}
+                    filteredUsers.map((u) => {
+                      const displayRole = u.role === 'BUREAU_OFFICER' ? 'Officer' 
+                                        : u.role === 'BUREAU_HEAD' ? 'Bureau Head' 
+                                        : u.role === 'APEX_ADMIN' ? 'Apex Admin' 
+                                        : 'Complainant';
+                      const displayBureau = u.bureauName ? u.bureauName.replace(' Bureau', '').replace(' Cell', '') : 'Central HQ';
+
+                      return (
+                        <tr key={u.id} className="hover:bg-[#F7F5EF] transition-colors">
+                          <td className="py-3.5 px-4 font-semibold text-[#252D27]">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-7 h-7 rounded-full bg-[#193B2A] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                {u.avatarInitials}
+                              </div>
+                              <div>
+                                <span className="font-semibold text-[#252D27]">{u.name}</span>
+                                <div className="text-[10.5px] text-[#737A72] font-mono">{u.email}</div>
+                              </div>
                             </div>
-                            <span>{u.name}</span>
-                          </div>
-                        </td>
+                          </td>
 
-                        <td className="py-3.5 px-4 font-mono text-[#64748B]">
-                          {u.email}
-                        </td>
+                          <td className="py-3.5 px-4 text-[#252D27] font-medium">
+                            {displayRole}
+                          </td>
 
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <Badge role={u.role}>{u.roleLabel}</Badge>
-                        </td>
+                          <td className="py-3.5 px-4 text-[#737A72]">
+                            {displayBureau}
+                          </td>
 
-                        <td className="py-3.5 px-4 text-[#1E293B]">
-                          {u.bureauName || 'Central / External'}
-                        </td>
+                          <td className="py-3.5 px-4 whitespace-nowrap">
+                            <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-[#EAF5EE] text-[#155836] border border-[#D1E7D9]">
+                              {u.status === 'ACTIVE' ? 'Active' : u.status || 'Active'}
+                            </span>
+                          </td>
 
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border ${
-                            u.status === 'ACTIVE'
-                              ? 'bg-[#EAF5EE] text-[#155836] border-[#D1E7D9]'
-                              : u.status === 'SUSPENDED'
-                              ? 'bg-[#FEE2E2] text-[#DC2626] border-[#FECACA]'
-                              : 'bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]'
-                          }`}>
-                            {u.status || 'ACTIVE'}
-                          </span>
-                        </td>
-
-                        <td className="py-3.5 px-4 font-mono text-[11px] text-[#64748B]">
-                          {u.lastActivity ? u.lastActivity.slice(0, 16).replace('T', ' ') : 'N/A'}
-                        </td>
-
-                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOpenRoleModal(u)}
-                              disabled={!isApexAdmin && currentPersona.email !== u.email}
-                            >
-                              Change Role
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleOpenStatusModal(u)}
-                              disabled={!isApexAdmin}
-                            >
-                              Status
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                          <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenRoleModal(u)}
+                                disabled={!isApexAdmin && currentPersona.email !== u.email}
+                              >
+                                Change Role
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleOpenStatusModal(u)}
+                                disabled={!isApexAdmin}
+                              >
+                                Status
+                              </Button>
+                              <button 
+                                onClick={() => handleOpenRoleModal(u)}
+                                className="text-[#737A72] hover:text-[#252D27] p-1 rounded-md font-bold tracking-widest text-xs cursor-pointer ml-1"
+                                title="Actions"
+                              >
+                                ···
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -1145,7 +1207,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
       >
         <div className="space-y-4 text-xs">
           {ruleFormError && (
-            <div className="p-2.5 bg-[#FEF2F2] border border-[#FEE2E2] rounded-lg text-[#DC2626] text-xs flex items-center gap-2">
+            <div className="p-2.5 bg-[#B94F45/10] border border-[#B94F45/15] rounded-lg text-[#B94F45] text-xs flex items-center gap-2">
               <AlertTriangle size={14} className="shrink-0" />
               <span>{ruleFormError}</span>
             </div>
@@ -1163,13 +1225,13 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#737A72] mb-1">
                 Applicable Category *
               </label>
               <select
                 value={ruleFormCategory}
                 onChange={(e) => setRuleFormCategory(e.target.value as ComplaintCategory)}
-                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
               >
                 <option value="ADMISSION_FRAUD">Admission Fraud / Capitation</option>
                 <option value="RAGGING">Ragging & Student Harassment</option>
@@ -1182,13 +1244,13 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             </div>
 
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#737A72] mb-1">
                 Applicable Bureau *
               </label>
               <select
                 value={ruleFormBureau}
                 onChange={(e) => setRuleFormBureau(e.target.value as any)}
-                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
               >
                 <option value="APPROVAL_BUREAU">Approval Bureau</option>
                 <option value="FINANCE_BUREAU">Finance Bureau</option>
@@ -1202,13 +1264,13 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#737A72] mb-1">
                 Priority Tier
               </label>
               <select
                 value={ruleFormPriority}
                 onChange={(e) => setRuleFormPriority(e.target.value as ComplaintPriority)}
-                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
               >
                 <option value="CRITICAL">Critical</option>
                 <option value="HIGH">High</option>
@@ -1218,7 +1280,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             </div>
 
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#737A72] mb-1">
                 Target SLA (Days) *
               </label>
               <input
@@ -1227,12 +1289,12 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 max={180}
                 value={ruleFormDuration}
                 onChange={(e) => setRuleFormDuration(parseInt(e.target.value, 10) || 1)}
-                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#0F172A] font-mono focus:outline-none focus:border-[#154636]"
+                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#252D27] font-mono focus:outline-none focus:border-[#193B2A]"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#737A72] mb-1">
                 Warning Threshold (Days) *
               </label>
               <input
@@ -1241,7 +1303,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 max={ruleFormDuration - 1}
                 value={ruleFormWarning}
                 onChange={(e) => setRuleFormWarning(parseInt(e.target.value, 10) || 1)}
-                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#0F172A] font-mono focus:outline-none focus:border-[#154636]"
+                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#252D27] font-mono focus:outline-none focus:border-[#193B2A]"
               />
             </div>
           </div>
@@ -1277,7 +1339,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         }
       >
         <div className="space-y-4 text-xs">
-          <p className="text-[#64748B] leading-relaxed">
+          <p className="text-[#737A72] leading-relaxed">
             Select the new administrative role for <strong>{targetUser?.name}</strong> ({targetUser?.email}). Changing this role immediately reconfigures permissions according to the AICTE RBAC matrix.
           </p>
 
@@ -1292,7 +1354,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                 key={r.role}
                 className={`p-3 rounded-xl border flex items-start gap-3 cursor-pointer transition-colors ${
                   newSelectedRole === r.role
-                    ? 'bg-[#EAF5EE] border-[#154636]'
+                    ? 'bg-[#EAF5EE] border-[#193B2A]'
                     : 'bg-white border-[#E5E7EB] hover:bg-[#F9FAF8]'
                 }`}
               >
@@ -1301,11 +1363,11 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
                   name="userRoleChoice"
                   checked={newSelectedRole === r.role}
                   onChange={() => setNewSelectedRole(r.role as UserRole)}
-                  className="mt-0.5 text-[#154636] focus:ring-[#154636]"
+                  className="mt-0.5 text-[#193B2A] focus:ring-[#193B2A]"
                 />
                 <div>
-                  <span className="font-bold text-[#0F172A] block">{r.label}</span>
-                  <span className="text-[11px] text-[#64748B] block mt-0.5">{r.desc}</span>
+                  <span className="font-bold text-[#252D27] block">{r.label}</span>
+                  <span className="text-[11px] text-[#737A72] block mt-0.5">{r.desc}</span>
                 </div>
               </label>
             ))}
@@ -1332,19 +1394,19 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         }
       >
         <div className="space-y-3 text-xs">
-          <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+          <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#737A72] mb-1">
             Account Access Status
           </label>
           <select
             value={newSelectedStatus}
             onChange={(e) => setNewSelectedStatus(e.target.value as any)}
-            className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+            className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
           >
             <option value="ACTIVE">Active (Normal Access)</option>
             <option value="SUSPENDED">Suspended (Access Revoked)</option>
             <option value="PENDING_VERIFICATION">Pending Identity Verification</option>
           </select>
-          <p className="text-[11px] text-[#64748B] mt-2">
+          <p className="text-[11px] text-[#737A72] mt-2">
             Status modifications are logged to the immutable audit trail for security compliance.
           </p>
         </div>
@@ -1391,13 +1453,13 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+              <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#737A72] mb-1">
                 Assigned Role
               </label>
               <select
                 value={newUserRole}
                 onChange={(e) => setNewUserRole(e.target.value as UserRole)}
-                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+                className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
               >
                 <option value="BUREAU_OFFICER">Bureau Officer</option>
                 <option value="BUREAU_HEAD">Bureau Head</option>
@@ -1408,13 +1470,13 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
             {newUserRole !== 'COMPLAINANT' && (
               <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+                <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#737A72] mb-1">
                   Bureau Affiliation
                 </label>
                 <select
                   value={newUserBureau}
                   onChange={(e) => setNewUserBureau(e.target.value as BureauType)}
-                  className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-[#154636]"
+                  className="w-full bg-white border border-[#DFE3DC] rounded-lg px-3 py-2 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A]"
                 >
                   <option value="APPROVAL_BUREAU">Approval Bureau</option>
                   <option value="FINANCE_BUREAU">Finance Bureau</option>

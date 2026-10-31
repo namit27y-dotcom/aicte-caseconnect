@@ -20,6 +20,7 @@ import { DeadlineQueueView } from './components/views/DeadlineQueueView';
 import { AnalyticsView } from './components/views/AnalyticsView';
 import { AuditTrailView } from './components/views/AuditTrailView';
 import { AdministrationView } from './components/views/AdministrationView';
+import { SettingsView } from './components/views/SettingsView';
 
 import { ComplaintDetailDrawer } from './components/views/ComplaintDetailDrawer';
 import { NewComplaintModal } from './components/views/NewComplaintModal';
@@ -421,7 +422,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#0F172A] flex flex-col font-sans antialiased">
+    <div className="min-h-screen bg-[#F7F5EF] text-[#252D27] flex flex-col font-sans antialiased">
       <div className="flex-1 flex">
         {/* Responsive Sidebar Navigation - Exactly 295px wide */}
         <Sidebar
@@ -434,7 +435,7 @@ export default function App() {
         />
 
         {/* Main Workspace Area with exact 295px left padding for sidebar */}
-        <div className="flex-1 flex flex-col min-w-0 lg:pl-[295px] bg-[#FAF8F5] transition-all">
+        <div className="flex-1 flex flex-col min-w-0 lg:pl-[265px] bg-[#F7F5EF] transition-all">
           {/* Top Bar Header with Unified Role Switcher and Search */}
           <TopBar
             activeTab={activeTab}
@@ -537,6 +538,10 @@ export default function App() {
                 onUpdateUsers={setUsers}
                 onRecordAudit={(item) => setAuditLogs((prev) => [item, ...prev])}
               />
+            )}
+
+            {activeTab === 'settings' && (
+              <SettingsView currentPersona={currentPersona} />
             )}
           </main>
         </div>

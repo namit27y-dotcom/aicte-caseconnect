@@ -63,7 +63,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   const variantColors = {
     danger: {
       button: 'danger' as const,
-      icon: <AlertTriangle size={20} className="text-[#DC2626]" />,
+      icon: <AlertTriangle size={20} className="text-[#B94F45]" />,
       badge: 'bg-[#FEF2F2] border-[#FECACA]',
     },
     warning: {
@@ -73,7 +73,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     },
     primary: {
       button: 'primary' as const,
-      icon: <AlertTriangle size={20} className="text-[#1B4532]" />,
+      icon: <AlertTriangle size={20} className="text-[#193B2A]" />,
       badge: 'bg-[#EBF3EE] border-[#CDE1D5]',
     },
   };
@@ -95,23 +95,23 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
         aria-describedby="confirm-dialog-description"
-        className="relative w-full max-w-md bg-white border border-[#E6E1D8] rounded-xl shadow-2xl p-6 z-10 space-y-4"
+        className="relative w-full max-w-md bg-white border border-[#E7E4DB] rounded-xl shadow-2xl p-6 z-10 space-y-4"
       >
         <div className="flex items-start gap-3">
           <div className={`p-2.5 rounded-lg border shrink-0 ${style.badge}`}>
             {style.icon}
           </div>
           <div className="flex-1">
-            <h3 id="confirm-dialog-title" className="text-base font-bold text-[#1F2421]">
+            <h3 id="confirm-dialog-title" className="text-base font-bold text-[#252D27]">
               {title}
             </h3>
-            <p id="confirm-dialog-description" className="text-xs text-[#5C6460] mt-1 leading-relaxed">
+            <p id="confirm-dialog-description" className="text-xs text-[#737A72] mt-1 leading-relaxed">
               {description}
             </p>
           </div>
           <button
             onClick={onCancel}
-            className="text-[#718096] hover:text-[#1F2421] p-1 rounded-md hover:bg-black/5"
+            className="text-[#737A72] hover:text-[#252D27] p-1 rounded-md hover:bg-black/5"
             aria-label="Close dialog"
           >
             <X size={16} />
@@ -120,7 +120,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
         {requireReason && (
           <div className="space-y-1.5 pt-1">
-            <label className="block text-xs font-semibold text-[#1F2421]">
+            <label className="block text-xs font-semibold text-[#252D27]">
               Audit Justification (Required):
             </label>
             <textarea
@@ -128,7 +128,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder={reasonPlaceholder}
-              className="w-full bg-[#FAF8F5] border border-[#D5CEC2] rounded-md p-2.5 text-xs text-[#1F2421] focus:outline-none focus:border-[#1B4532] focus:ring-1 focus:ring-[#1B4532]"
+              className="w-full bg-[#F7F5EF] border border-[#D5CEC2] rounded-md p-2.5 text-xs text-[#252D27] focus:outline-none focus:border-[#193B2A] focus:ring-1 focus:ring-[#193B2A]"
               autoFocus
             />
           </div>

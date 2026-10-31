@@ -18,7 +18,6 @@ export const Badge: React.FC<BadgeProps> = ({
   role,
   className = '',
 }) => {
-  // Determine variant based on semantic prop if provided
   let effectiveVariant = variant || 'neutral';
 
   if (status) {
@@ -27,10 +26,10 @@ export const Badge: React.FC<BadgeProps> = ({
         effectiveVariant = 'neutral';
         break;
       case 'UNDER_PROCESS':
-        effectiveVariant = 'blue';
+        effectiveVariant = 'forest';
         break;
       case 'COORDINATION':
-        effectiveVariant = 'purple';
+        effectiveVariant = 'amber';
         break;
       case 'RESOLUTION_REVIEW':
         effectiveVariant = 'forest';
@@ -51,7 +50,7 @@ export const Badge: React.FC<BadgeProps> = ({
         effectiveVariant = 'amber';
         break;
       case 'MEDIUM':
-        effectiveVariant = 'blue';
+        effectiveVariant = 'forest';
         break;
       case 'LOW':
         effectiveVariant = 'neutral';
@@ -63,10 +62,10 @@ export const Badge: React.FC<BadgeProps> = ({
         effectiveVariant = 'rust';
         break;
       case 'BUREAU_HEAD':
-        effectiveVariant = 'purple';
+        effectiveVariant = 'forest';
         break;
       case 'BUREAU_OFFICER':
-        effectiveVariant = 'forest';
+        effectiveVariant = 'amber';
         break;
       case 'COMPLAINANT':
         effectiveVariant = 'neutral';
@@ -75,17 +74,17 @@ export const Badge: React.FC<BadgeProps> = ({
   }
 
   const variantClasses = {
-    neutral: 'bg-[#F2EFE9] text-[#4A5568] border-[#E2DDD3]',
-    forest: 'bg-[#EBF3EE] text-[#1B4532] border-[#CDE1D5]',
-    amber: 'bg-[#FDF6ED] text-[#9A621D] border-[#F2DEBF]',
-    rust: 'bg-[#FDF0F0] text-[#9B2226] border-[#F5C2C4]',
-    blue: 'bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]',
-    purple: 'bg-[#F5F3FF] text-[#6D28D9] border-[#DDD6FE]',
+    neutral: 'bg-[#F7F5EF] text-[#252D27] border-[#E7E4DB]',
+    forest: 'bg-[#193B2A]/10 text-[#193B2A] border-[#193B2A]/25',
+    amber: 'bg-[#C58B3B]/10 text-[#C58B3B] border-[#C58B3B]/30',
+    rust: 'bg-[#B94F45]/10 text-[#B94F45] border-[#B94F45]/30',
+    blue: 'bg-[#193B2A]/10 text-[#193B2A] border-[#193B2A]/25', // No blue
+    purple: 'bg-[#C5A568]/15 text-[#142B21] border-[#C5A568]/40', // Gold accent
   };
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium border rounded-sm tracking-wide ${variantClasses[effectiveVariant]} ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border font-sans select-none ${variantClasses[effectiveVariant]} ${className}`}
     >
       {children}
     </span>
