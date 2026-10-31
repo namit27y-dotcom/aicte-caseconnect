@@ -130,63 +130,44 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="space-y-3.5 select-none pb-6">
-      {/* 1. Hero Photograph Banner exactly as Reference Image 1 */}
-      <div className="relative rounded-xl overflow-hidden shadow-2xs border border-[#E7E4DB] bg-white h-44 sm:h-48 flex items-center">
+      {/* 1. Hero Photograph Banner with Official AICTE Artwork */}
+      <div className="relative rounded-xl overflow-hidden shadow-2xs border border-[#E7E4DB] bg-white aspect-[3/1] max-h-48 sm:max-h-56 flex items-center">
         {/* Background building photo */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/assets/hero-building.jpg"
-            alt="AICTE Institutional Headquarters"
+            src="/assets/overview-hero.jpg"
+            alt="AICTE CaseConnect - Case Overview"
             className="w-full h-full object-cover object-center"
           />
-          {/* Subtle ivory gradient on the left so typography is crisp */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F7F5EF] via-[#F7F5EF]/85 to-transparent max-w-lg" />
         </div>
 
-        {/* Hero Left Content */}
-        <div className="relative z-10 p-6 sm:p-7 max-w-md">
-          <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#172B24] font-serif leading-tight">
-            Case Overview
-          </h1>
-          <p className="text-xs text-[#78847D] font-sans mt-0.5 font-medium">
-            AICTE CaseConnect
-          </p>
-        </div>
+        {/* Accessible hidden text for screen readers */}
+        <h1 className="sr-only">Case Overview - AICTE CaseConnect</h1>
 
-        {/* Top-Right Action Buttons from Reference Image 1: [+ Register Complaint] [Export Report] */}
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        {/* Top-Right Action Buttons: [+ Register Complaint] [Export Report] */}
+        <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-10 flex items-center gap-2">
           <button 
             onClick={() => onNavigateTab('complaints')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#193B2A] hover:bg-[#142B21] text-white rounded-md text-xs font-medium cursor-pointer shadow-2xs transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#193B2A] hover:bg-[#142B21] text-white rounded-md text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
           >
             <Plus size={13} />
             <span>Register Complaint</span>
           </button>
           <button 
             onClick={() => onNavigateTab('analytics')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/90 hover:bg-white text-[#252D27] border border-[#E7E4DB] rounded-md text-xs font-medium cursor-pointer shadow-2xs transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/95 hover:bg-white text-[#252D27] border border-[#E7E4DB] rounded-md text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
           >
             <Download size={13} />
             <span>Export Report</span>
           </button>
         </div>
-      </div>
 
-      {/* 2. Central Standing Committee & Governance Strip from Image 1 */}
-      <div className="bg-[#142B21] text-[#F7F5EF] rounded-lg px-4 py-2 flex items-center justify-between text-xs shadow-2xs">
-        <div className="flex items-center gap-2.5">
-          <Users size={14} className="text-[#C5A568]" />
-          <span className="text-[12px] font-medium text-white tracking-wide">
-            Central Standing Committee &amp; Inter-Bureau Coordination Council
-          </span>
-        </div>
-        <div className="flex items-center gap-3 text-[11px] text-[#829B86]">
-          <span className="flex items-center gap-1.5 text-white font-medium">
-            <span className="w-2 h-2 rounded-full bg-[#4F8064] animate-pulse" />
-            SIMULATION • DEMO ENVIRONMENT
-          </span>
+        {/* Bottom-Right Demo / Timestamp Status */}
+        <div className="absolute bottom-2.5 right-3.5 z-10 hidden sm:flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#142B21]/80 backdrop-blur-xs text-[10.5px] border border-white/15">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#4F8064] animate-pulse" />
+          <span className="text-white font-medium text-[10px]">SIMULATION</span>
           <span className="text-[#829B86]/60">|</span>
-          <span className="font-mono text-[11px]">Updated: 29 Oct 2026, 11:42 AM</span>
+          <span className="font-mono text-[10px] text-[#829B86]">29 Oct 2026, 11:42 AM</span>
         </div>
       </div>
 
