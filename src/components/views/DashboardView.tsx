@@ -130,8 +130,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="space-y-3.5 select-none pb-6">
-      {/* 1. Hero Photograph Banner with Official AICTE Artwork */}
-      <div className="relative rounded-xl overflow-hidden shadow-2xs border border-[#E7E4DB] bg-white aspect-[3/1] max-h-48 sm:max-h-56 flex items-center">
+      {/* 1. Hero Photograph Banner with Official AICTE Artwork - Full Length / Full Width */}
+      <div className="relative w-full rounded-xl overflow-hidden shadow-2xs border border-[#E7E4DB] bg-white h-48 sm:h-56 md:h-64 flex items-center">
         {/* Background building photo */}
         <div className="absolute inset-0 z-0">
           <img
@@ -145,7 +145,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <h1 className="sr-only">Case Overview - AICTE CaseConnect</h1>
 
         {/* Top-Right Action Buttons: [+ Register Complaint] [Export Report] */}
-        <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-10 flex items-center gap-2">
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
           <button 
             onClick={() => onNavigateTab('complaints')}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#193B2A] hover:bg-[#142B21] text-white rounded-md text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
@@ -162,8 +162,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </button>
         </div>
 
-        {/* Bottom-Right Demo / Timestamp Status */}
-        <div className="absolute bottom-2.5 right-3.5 z-10 hidden sm:flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#142B21]/80 backdrop-blur-xs text-[10.5px] border border-white/15">
+        {/* Bottom-Right Demo / Timestamp Status positioned safely inside card */}
+        <div className="absolute bottom-3 right-4 z-10 hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#142B21]/90 backdrop-blur-xs text-[10.5px] border border-white/20 shadow-xs">
           <span className="w-1.5 h-1.5 rounded-full bg-[#4F8064] animate-pulse" />
           <span className="text-white font-medium text-[10px]">SIMULATION</span>
           <span className="text-[#829B86]/60">|</span>

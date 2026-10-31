@@ -1,239 +1,259 @@
 # AICTE CaseConnect
 
-> **Centralized Institution-Related Complaint Monitoring & Resolution Platform**  
+> **Centralized Technical Education Institution Case Monitoring, Overlap Intelligence & Cross-Bureau Resolution Platform**  
 > **Smart India Hackathon 2026** | **Problem Statement ID:** `SIH26264`  
-> **Organization:** All India Council for Technical Education (AICTE)  
-> **Team:** `VECTOR_VAGABONDS`
+> **Organization:** All India Council for Technical Education (AICTE), Ministry of Education, Govt. of India  
+> **Team:** `VECTOR_VAGABONDS` | **Repository:** [https://github.com/namit27y-dotcom/aicte-caseconnect.git](https://github.com/namit27y-dotcom/aicte-caseconnect.git)
 
 ---
 
-## 🏛️ Executive Summary & Vision
+## 🏛️ Executive Summary & Institutional Vision
 
-In higher and technical education governance across India, complaints against institutions often arrive through fragmented channels (approval queries, financial anomalies, faculty grievances, ragging reports, infrastructural deficiencies). When different AICTE bureaus handle related cases in isolation:
-- Multiple officers examine overlapping issues without mutual awareness.
-- Institutions may face parallel scrutiny without coordinated resolution.
-- Repeat offenders or chronic compliance failures can go unnoticed across regional borders.
-- Escalation deadlines and statutory turnaround times become difficult to enforce.
+Higher and technical educational institutions across India interact with multiple AICTE bureaus simultaneously—including **Approval Bureau**, **Finance Bureau**, **Public Grievance Cell**, **Policy & Academic Bureau**, and **Legal & Vigilance Cell**. Historically, grievances and compliance queries arrived through disjointed avenues, resulting in:
+- **Siloed Investigations:** Disconnected officers inspecting overlapping anomalies without mutual institutional context.
+- **Regulatory Fatigue:** Approved institutions facing parallel, uncoordinated notices from distinct bureaus.
+- **Undetected Systemic Violations:** Repeat compliance breaches and multi-campus infractions crossing regional jurisdictions undetected.
+- **SLA Breach Blindspots:** Difficulty tracking statutory escalation windows and enforcement turnaround times.
 
-**AICTE CaseConnect** solves this through a unified, role-based monitoring and cross-bureau coordination platform:
-1. **Centralize:** One unified register with transparent, traceable case histories.
-2. **Connect:** Algorithmic overlap candidate detection with explainable similarity evidence.
-3. **Coordinate:** Joint inquiry groups, lead bureaus, and cross-departmental handoffs.
-4. **Monitor:** Configurable statutory SLA deadlines with automated warning thresholds and escalation notices.
-5. **Prove:** Tamper-evident, append-only audit trail logging every administrative mutation.
+**AICTE CaseConnect** introduces an institutional-grade, privacy-preserving governance architecture that unifies case intake, detects cross-bureau overlap candidates using weighted heuristic intelligence, coordinates joint multi-disciplinary inquiry taskforces, and tracks statutory SLA deadlines under strict audit trails.
+
+---
+
+## 🎨 Institutional Design System (GovTech Enterprise)
+
+Designed strictly following Indian Institutional & Governance design principles with **zero cyan/blue**, using restrained, trustworthy forest tones, warm ivory canvases, and dignified serif typography:
+
+| Design Token | Hex Code | Purpose & Application |
+|---|---|---|
+| **Sidebar Canvas** | `#12382B` | Authoritative deep forest green sidebar inspired by official secretariat emblems |
+| **Primary Green** | `#174B38` | Primary institutional brand color, active navigation tabs, primary CTAs |
+| **Canvas Background** | `#F7F5EF` | Soft warm ivory background minimizing ocular strain during prolonged casework |
+| **Card Surface** | `#FFFFFF` | Crisp pure white surfaces with subtle micro-borders |
+| **Borders & Dividers**| `#E8E2D6` | Refined warm stone borders replacing heavy artificial shadows |
+| **Accent Gold** | `#D5A64A` | Muted golden brass accent for institutional emblems and badges |
+| **Primary Text** | `#172B24` | Deep forest-charcoal ink for maximum legibility and contrast |
+| **Secondary Text** | `#78847D` | Balanced muted slate-green for labels, captions, and secondary metadata |
+| **Danger / Overdue** | `#B94F45` | Restrained crimson for statutory SLA breaches and critical notices |
+| **Warning / Imminent**| `#C58B3B` | Warm ochre amber for deadline warnings (< 5 days remaining) |
+| **Success / Resolved**| `#4F8064` | Muted sage green for closed cases, approved statuses, and compliance achievements |
+| **Headings Typography**| `Lora`, `Cinzel`, serif | Premium editorial serif typography for authoritative governance titles |
+| **Body Typography** | `Inter`, `Manrope`, sans-serif | High-clarity geometric sans-serif for dense casework data tables |
+| **Monospace / Codes** | `JetBrains Mono` | Distinct tabular monospace for tracking IDs (`CC-2026-XXXXXX`) |
 
 ---
 
 ## 🚀 Key Modules & Capabilities
 
-### 1. 📊 Executive Dashboard (`/overview`)
-- **Real-Time KPI Metrics:** Dynamic counts for Total Complaints, Open Cases, Overdue Incidents, and Disposed Cases with periodic trend delta percentages.
-- **Workflow State Distribution:** Interactive donut breakdown tracking cases across `SUBMITTED`, `ASSIGNED`, `UNDER_PROCESS`, `COORDINATION`, `RESOLUTION_REVIEW`, and `CLOSED`.
-- **Bureau Workload Density:** Visual progress capacity indicators comparing open cases against bureau allocation limits across all 5 AICTE bureaus.
-- **Recent Case Intake Feed:** Quick-access table showing latest case receipts with status chips and direct drawer inspection.
+### 1. 📊 Executive Case Monitoring Overview (`/overview`)
+- **Full-Width Institutional Hero Banner:** Authentic Secretariat artwork with embedded governance council styling and quick action buttons.
+- **Dynamic 6-Card Single Source of Truth:**
+  - `Total Cases` (16 cases, $+5\%$ periodic change)
+  - `Awaiting Review` (2 fresh intake cases awaiting first action)
+  - `In Progress` (9 actively assigned, coordinated, or review cases)
+  - `Overdue` (3 cases exceeding statutory timeframes)
+  - `Disposed` (5 closed / resolved complaints)
+  - `Coordination` (2 cross-bureau overlap candidates under joint review)
+- **Status Distribution Donut Chart:** Responsive SVG chart with `viewBox="0 0 200 200"` scaling ensuring zero overflow, displaying exact dynamic proportions (`Submitted`, `Under Process`, `In Coordination`, `Resolution Review`, `Disposed`) summing to 100%.
+- **Attention & Escalation Queue:** High-priority queue prioritizing overdue cases (`CC-2026-000098`, `CC-2026-000178`, `CC-2026-000215`) with direct slide-out drawer inspection.
+- **Bureau Workload Capacity:** Live allocation progress bars across AICTE bureaus.
+- **Institution Activity Register:** Live register linking institutions to their active open casework tallies.
 
-### 2. 🗂️ Complaints Register & Inspector (`/complaints`)
-- **Comprehensive Case Directory:** Paginated, multi-attribute searchable database of institutional complaints.
-- **Multi-Filter Faceting:** Filter by Status, Bureau, Category, Priority, and Institution State.
-- **Slide-Over Case Drawer:** Full case chronology, complainant details, assigned officer, target SLA countdown, and linked audit logs.
-- **Workflow State Machine:** Authorized officers can transition complaint statuses (`SUBMITTED` → `ASSIGNED` → `UNDER_PROCESS` → `COORDINATION` → `RESOLUTION_REVIEW` → `CLOSED`) with mandatory reasoning captured for audit.
-- **New Complaint Intake Modal:** Multi-step wizard to register new grievances with automatic tracking ID generation (`CC-2026-XXXXX`).
+### 2. 🗂️ Complaints Directory & Lifecycle Engine (`/complaints`)
+- **Centralized Case Registry:** Comprehensive, searchable directory of institutional complaints across categories (Infrastructure, Faculty Shortage, Affiliation, Fee Anomaly, Ragging).
+- **Multi-Filter Faceting:** Search by tracking number, filter by Bureau, Category, Priority (`Critical`, `High`, `Medium`, `Low`), and Status.
+- **Slide-Out Complaint Detail Drawer:** Complete chronological event history, complainant metadata, assigned officer, statutory deadline countdown, and immutable audit trail.
+- **Role-Gated State Machine:** Strict lifecycle enforcement (`SUBMITTED` → `ASSIGNED` → `UNDER_PROCESS` → `COORDINATION` → `RESOLUTION_REVIEW` → `CLOSED`) requiring recorded justification for state transitions.
 
 ### 3. 🏢 Institution 360° Directory (`/institutions`)
-- **Institution Dossiers:** Holistic profile cards for approved engineering, management, and polytechnic institutes.
-- **Cross-Bureau Case Aggregation:** View all historical and pending complaints filed against an institution, irrespective of which bureau received them.
-- **Regulatory Statuses:** AICTE Approval ID, State, District, Active Approval Status (`APPROVED`, `UNDER_SCRUTINY`, `NOTICE_SERVED`).
-- **One-Click Deep Linking:** Jump directly from an institution card to filtered complaints in the Complaints Register.
+- **Holistic Institution Dossiers:** Profiles for technical institutes across engineering, polytechnic, management, and pharmacy.
+- **Cross-Bureau Case Aggregator:** Consolidates all complaints filed against an institution regardless of receiving bureau (`deriveInstitutionMetrics`).
+- **Regulatory Status Flags:** Permanent AICTE ID, State, District, and live status (`Approved`, `Under Scrutiny`, `Notice Sent`).
+- **Direct Filtering:** Single-click navigation from any institution profile directly into its filtered complaints.
 
-### 4. 🔗 Cross-Bureau Coordination & Overlap Engine (`/coordination`)
-- **Algorithmic Overlap Detection:** Multi-signal heuristic matching engine calculating similarity confidence scores (0–100%) based on:
-  - **Institution Match:** Exact regulatory code / name match ($40\%$ weight).
-  - **Category Alignment:** Related domain infractions ($25\%$ weight).
-  - **Temporal Proximity:** Intake dates within 30–60 days ($20\%$ weight).
-  - **Textual & Keyword Heuristics:** Keyword co-occurrence ($15\%$ weight).
-- **Explainable Evidence Cards:** Clearly explains *why* cases were flagged (e.g. shared faculty payroll complaints coinciding with annual approval inspection).
-- **Human-in-the-Loop Review:** Officers can either **Confirm Overlap** (spawning joint coordination) or **Dismiss as Independent** (capturing official justification).
-- **Active Coordination Groups:** Inter-bureau task forces with designated lead officers, co-reviewing bureaus, and consolidated findings.
+### 4. 🔗 Overlap Intelligence & Joint Taskforces (`/coordination`)
+- **Multi-Signal Heuristic Matching Algorithm:**
+  - Institutional Identifier & Campus Location Match ($40\%$ weight).
+  - Category & Subject Violation Correlation ($25\%$ weight).
+  - Temporal Intake Proximity within 30–60 days ($20\%$ weight).
+  - Textual & Keyword Co-occurrence Analysis ($15\%$ weight).
+- **Explainable Evidence Cards:** Details similarity score ($0-100\%$) and concrete overlap rationale (e.g., simultaneous faculty payroll grievance and annual approval inspection).
+- **Human-in-the-Loop Review Workflow:** Bureau officers can **Confirm Overlap** (spawning joint coordination groups) or **Dismiss as Independent** with mandatory justification logged to audit trail.
 
-### 5. ⏱️ Statutory Deadline & Escalation Queue (`/deadlines`)
-- **SLA Priority Queue:** Sorts cases by imminent statutory deadline risk (`OVERDUE`, `CRITICAL <5 DAYS`, `ON SCHEDULE`).
-- **Escalation Dispatcher:** One-click dispatch of formal Show-Cause Notices to Regional Officers and Bureau Heads for overdue cases.
-- **Time Remaining Countdown:** Displays remaining processing days and statutory targets.
+### 5. ⏱️ Statutory SLA Queue & Escalation Dispatcher (`/deadlines`)
+- **Imminent Breach Monitoring:** Classifies casework by deadline urgency (`Overdue`, `Critical < 5 Days`, `On Schedule`).
+- **Configurable SLA Policies:** Threshold rules customizable per bureau, category, and case priority.
+- **Escalation Dispatcher:** One-click generation of formal Show-Cause Notices to Regional Officers and Bureau Heads.
 
-### 6. 📈 Analytics & Governance Intelligence (`/analytics`)
-- **Live Aggregation Engine:** All metrics calculated in real-time from active complaint data (no hardcoded figures):
-  - Total Complaints, Open Complaints, Overdue Complaints, Disposed Cases.
-  - **Disposal Rate:** $\frac{\text{Disposed}}{\text{Total}} \times 100\%$.
-  - **Average Resolution Time:** $\frac{\sum (\text{Resolved} - \text{Intake})}{\text{Disposed Cases}}$ (in days).
-  - **Cross-Bureau Cases:** Total complaints with active inter-bureau linkages.
-- **Workload Analytics Across 5 Bureaus:** Approval Bureau, Finance Bureau, Grievance Cell, Policy & Academic Bureau, Legal & Vigilance Cell.
-- **State-Wise Geographical Distribution:** Ranked table of states with complaint volumes, open vs. closed breakdown, and search-to-filter.
-- **Aging Buckets:** Cases segregated into `0–7 Days`, `8–30 Days`, `31–60 Days`, and `60+ Days`.
-- **Export to CSV:** Exports currently filtered dataset directly to `.csv` for offline analysis and reporting.
+### 6. 📈 Analytics & Governance Reports (`/analytics`)
+- **Strict Single Source of Truth Engine:** All metrics calculated dynamically via `src/utils/analyticsCalculations.ts` from active complaint records:
+  - Total Volume, Disposed Count, Disposal Rate ($\frac{\text{Disposed}}{\text{Total}} \times 100\%$), and Average Resolution Time ($\frac{\sum (\text{Resolved} - \text{Intake})}{\text{Disposed}}$).
+  - **SLA Compliance Rate:** Percentage of complaints meeting statutory SLA targets.
+- **Dynamic 6-Month Intake vs. Disposal Line Chart:** Scaled vector plot with interactive point tooltips indicating monthly received and resolved counts.
+- **Top Bureaus Workload Breakdown:** Dynamic volume distribution with proportional progress bars.
+- **Status Distribution Donut:** Clean side-by-side layout with vertical legend and zero heading overlap.
+- **Complaint Ageing Distribution:** Breakdown across `0–7 Days`, `8–30 Days`, `31–60 Days`, and `60+ Days` with triage action guidance.
+- **State-Wise Geographical Distribution:** Ranked breakdown across Indian states and jurisdictions.
+- **RFC 4180 Secure CSV Export:** Exports filtered dataset with formula injection defense (`=`, `+`, `-`, `@`).
 
-### 7. 🛡️ System Administration & RBAC (`/administration`)
-- **13-Capability Role-Permissions Matrix:** Clear breakdown of capabilities across all 4 user roles:
-  1. *Complainant (Citizen/Student/Faculty)*
-  2. *Bureau Officer (Scrutiny & Investigation)*
-  3. *Bureau Head (Director / Regional In-Charge)*
-  4. *Apex Admin (Member Secretary / Central Admin)*
-- **Configurable SLA Rules:**
-  - Create, edit, toggle, or delete SLA policies per bureau, category, and priority.
-  - Form validation: Positive integers, warning threshold strictly lower than deadline duration.
-  - Reset to statutory AICTE standards with a single click.
-- **User Directory & Provisioning:**
-  - Searchable user table with status (`ACTIVE`, `SUSPENDED`, `PENDING_VERIFICATION`).
-  - Reassign user roles with audit capture.
-  - Add new officer credentials and assign designated bureaus.
-- **Role-Based Guards:** Enforces permission restrictions with clear explanatory notices for non-admin viewers.
+### 7. 🛡️ Role-Based Access Control & User Administration (`/administration`)
+- **13-Capability Role-Permissions Matrix:**
+  1. *Complainant (Student / Faculty / Citizen)*: Limited intake submission and tracking of own complaints.
+  2. *Bureau Officer (Investigator)*: Bureau casework triage, overlap recommendations, and evidence attachments.
+  3. *Bureau Head (Director / Regional In-Charge)*: Inter-bureau approvals, taskforce formation, and escalation review.
+  4. *Apex Admin (Member Secretary / Central Secretariat)*: System-wide policy governance, SLA threshold modifications, user provisioning.
+- **User Provisioning Directory:** Searchable officer directory with status tags and role assignments.
 
 ### 8. 📜 Tamper-Evident Audit Trail (`/audit`)
-- **Append-Only Logging:** Every administrative action generates an immutable audit item.
-- **Captured Metadata:** Timestamp, Actor Name, Actor Role, Actor Bureau, Action Type (`STATUS_CHANGE`, `OVERLAP_LINK`, `DEADLINE_OVERRIDE`, `SLA_RULE_UPDATE`, `USER_ROLE_CHANGE`), Entity ID, Previous Value, New Value, and Reason.
-- **Search & Filter:** Search by tracking number, actor name, or action type.
+- **Append-Only Event Ledger:** Captures timestamp, actor name, actor role, bureau, mutation type (`STATUS_CHANGE`, `OVERLAP_LINK`, `DEADLINE_OVERRIDE`, `SLA_RULE_UPDATE`, `USER_ROLE_CHANGE`), entity ID, old value, new value, and rationale.
 
 ---
 
-## 🎨 Enterprise Design System
+## 🛠️ Technology Stack & Architecture
 
-The visual style follows a warm, authoritative institutional design language:
-
-| Design Element | Hex / Token | Purpose |
-|---|---|---|
-| **Canvas Background** | `#FBF9F5` / Warm Alabaster | Soft off-white reducing eye strain during extended casework |
-| **Sidebar Background** | `#09251F` / Deep Forest Green | Authoritative dark sidebar inspired by official government seals |
-| **Primary Institutional**| `#154636` / Forest Green | Primary buttons, active highlights, header accents |
-| **Secondary Accent** | `#0F766E` / Teal Green | Progress indicators, coordination tags, information badges |
-| **Neutral Borders** | `#E6E1D8` / Subtle Stone | Ultra-crisp thin borders replacing heavy card shadows |
-| **Overdue / Alert** | `#DC2626` / Restrained Crimson | High-visibility warning indicators for SLA breach |
-| **Warning / Imminent** | `#D97706` / Warm Amber | Countdown warnings (< 5 days remaining) |
-| **Typography** | Plus Jakarta Sans & JetBrains Mono | Clean legible UI headings and distinct monospace tracking IDs |
-
----
-
-## 🛠️ Technology Stack
-
-- **Frontend Framework:** React 19 (`react`, `react-dom`)
-- **Language:** TypeScript 5.8+ (`strict` mode enabled)
-- **Build Tooling:** Vite 6 (`@vitejs/plugin-react`)
-- **Styling Engine:** Tailwind CSS v4 (`@tailwindcss/vite`)
-- **Icons:** Lucide React (`lucide-react`)
+- **Frontend Core:** React 19 (`react`, `react-dom`)
+- **Language:** TypeScript 5.8+ with strict compiler checks (`strict: true`, `noImplicitAny: true`)
+- **Styling Architecture:** Tailwind CSS v4 (`@tailwindcss/vite`) with custom CSS color tokens
+- **Icons & Visual Assets:** Lucide React (`lucide-react`)
 - **Animations:** Motion (`motion`)
-- **Calculation Engine:** Pure mathematical utility module (`src/utils/analyticsCalculations.ts`)
-- **Data Layer:** In-memory reactive state initialized from synthetic seed datasets (`src/data/syntheticData.ts`)
+- **Testing Suite:** Vitest 3 (`vitest`) with 115 unit test specifications across metrics, permissions, and workflow machines
+- **Build & Dev Tooling:** Vite 6 with lightning-fast Hot Module Replacement (HMR)
 
 ---
 
-## 📁 Repository Directory Structure
+## 📁 Project Directory Structure
 
 ```text
-├── index.html                      # HTML5 entry with Google Fonts & Meta tags
-├── metadata.json                   # AI Studio applet metadata & capabilities
-├── package.json                    # Project dependencies & build scripts
-├── tsconfig.json                   # TypeScript compiler options
-├── vite.config.ts                  # Vite bundler configuration with Tailwind
+aicte-caseconnect/
+├── index.html                      # HTML5 entry with institutional serif Google Fonts
+├── package.json                    # Project dependencies, build scripts & test commands
+├── tsconfig.json                   # Strict TypeScript compiler configuration
+├── vite.config.ts                  # Vite bundler configuration with Tailwind CSS v4
 │
 ├── public/
-│   └── assets/                     # Static assets and reference documentation
+│   └── assets/                     # Authentic AICTE logos, building banners, and SVG vector assets
 │
 └── src/
-    ├── main.tsx                    # React DOM entry point
-    ├── App.tsx                     # Main application controller, state & navigation router
-    ├── index.css                   # Global Tailwind CSS imports & custom styles
+    ├── main.tsx                    # React application bootstrap
+    ├── App.tsx                     # Top-level state manager, navigation tabs & routing
+    ├── index.css                   # Institutional CSS variables, typography, and Tailwind rules
     │
     ├── types/
-    │   └── index.ts                # TypeScript interfaces (Complaint, Persona, SLA, Audit)
+    │   └── index.ts                # Strong TypeScript interfaces (Complaint, Persona, Institution, Audit, SLA)
     │
     ├── data/
-    │   └── syntheticData.ts        # Synthetic SIH 2026 demo data (Complaints, Institutions, etc.)
+    │   └── syntheticData.ts        # Synthetic demo records for SIH 2026 technical validation
     │
     ├── utils/
-    │   └── analyticsCalculations.ts # Mathematical calculation engine & CSV export
+    │   ├── caseMetrics.ts          # Core KPI derivations, status distribution, and institution metrics
+    │   ├── analyticsCalculations.ts# Pure mathematical calculation engine and CSV exporter
+    │   ├── permissions.ts          # 13-capability RBAC evaluator
+    │   └── workflow.ts             # Strict finite state machine for complaint lifecycles
     │
-    └── components/
-        ├── layout/
-        │   ├── Sidebar.tsx         # 295px fixed sidebar with role selector
-        │   ├── TopBar.tsx          # Header with global search, notifications, intake CTA
-        │   └── SyntheticBanner.tsx # Disclaimer banner for synthetic demo data
-        │
-        ├── ui/
-        │   ├── Badge.tsx           # Standardized status and category badges
-        │   ├── Button.tsx          # Accessible styled button primitives
-        │   ├── Card.tsx            # Flat warm-white card containers
-        │   ├── Input.tsx           # Input fields and form controls
-        │   └── Modal.tsx           # Accessible modal dialog primitive
-        │
-        └── views/
-            ├── DashboardView.tsx        # Overview dashboard with charts & workloads
-            ├── ComplaintsView.tsx       # Searchable complaints table & filter toolbar
-            ├── ComplaintDetailDrawer.tsx# Full slide-out case drawer with state transitions
-            ├── NewComplaintModal.tsx    # Multi-field intake registration modal
-            ├── InstitutionsView.tsx     # Institutional directory & dossiers
-            ├── CoordinationView.tsx     # Cross-bureau overlap analysis & joint groups
-            ├── DeadlineQueueView.tsx    # Imminent deadline & escalation queue
-            ├── AnalyticsView.tsx        # KPI metrics, workload charts, state distribution
-            ├── AuditTrailView.tsx       # Append-only chronological audit log table
-            └── AdministrationView.tsx   # RBAC permissions, SLA rules & user management
+    ├── components/
+    │   ├── charts/
+    │   │   ├── DonutChart.tsx      # SVG donut chart with standardized 200x200 viewBox scaling
+    │   │   ├── LineChart.tsx       # SVG line chart for multi-month intake vs. disposal trends
+    │   │   └── HorizontalBarChart.tsx # SVG horizontal progress bars
+    │   │
+    │   ├── layout/
+    │   │   ├── Sidebar.tsx         # Deep forest green sidebar with role switcher & badge tallies
+    │   │   ├── TopBar.tsx          # Institutional header with search, notifications & user profile
+    │   │   └── SyntheticBanner.tsx # Demo simulation environment disclaimer
+    │   │
+    │   ├── ui/
+    │   │   ├── Badge.tsx           # Institutional status and priority badges
+    │   │   ├── Button.tsx          # Accessible styled button primitives
+    │   │   ├── Card.tsx            # Flat ivory card containers
+    │   │   ├── DataTable.tsx       # Standardized table component with pagination
+    │   │   ├── EmptyState.tsx      # Clean empty state indicators
+    │   │   ├── FilterBar.tsx       # Search and select filter bar
+    │   │   └── Modal.tsx           # Modal dialog wrapper
+    │   │
+    │   └── views/
+    │       ├── DashboardView.tsx   # Executive Case Overview with full-width banner
+    │       ├── ComplaintsView.tsx  # Searchable complaints table & filter toolbar
+    │       ├── ComplaintDetailDrawer.tsx # Slide-out case inspection drawer
+    │       ├── NewComplaintModal.tsx # Multi-step intake registration wizard
+    │       ├── InstitutionsView.tsx # Institutional directory & dossiers
+    │       ├── CoordinationView.tsx # Overlap intelligence & joint taskforces
+    │       ├── DeadlineQueueView.tsx# Imminent deadline & escalation queue
+    │       ├── AnalyticsView.tsx   # Multi-filter governance analytics & reports
+    │       ├── AdministrationView.tsx # RBAC permissions, SLA rules & user directory
+    │       ├── AuditTrailView.tsx  # Chronological append-only audit trail
+    │       └── SettingsView.tsx    # Application preferences & system metadata
+    │
+    └── __tests__/
+        ├── caseMetrics.test.ts     # 30 tests validating KPI calculations & invariants
+        ├── permissions.test.ts     # 39 tests validating role-based authorization matrix
+        └── workflow.test.ts        # 46 tests validating complaint state transitions
 ```
 
 ---
 
 ## 👥 Demo Personas & Role Switcher
 
-Test all role-based features by switching personas using the **Role Switcher** at the bottom of the left sidebar:
+You can test all role-based experiences using the **Role Switcher** at the bottom-left of the sidebar:
 
-| Persona | Name | Role | Bureau / Jurisdiction | Permitted Scope |
+| Persona | Name | Role | Bureau Allocation | Capabilities |
 |---|---|---|---|---|
-| **Officer** | Aashish Kumar | `BUREAU_OFFICER` | Approval Bureau (Western Region) | View/edit bureau complaints, recommend overlap, transition statuses |
-| **Bureau Head** | Dr. Meenakshi Sundaram | `BUREAU_HEAD` | Grievance Cell (Central HQ) | Full bureau authority, approve transfers, view bureau audit logs |
-| **Apex Admin** | Prof. R. K. Verma | `APEX_ADMIN` | Member Secretary Secretariat | Global view, configure SLA rules, reassign user roles, manage system |
-| **Complainant** | Priya Sharma | `COMPLAINANT` | Citizen / Student Complainant | Submit complaints, view own submitted cases only (restricted views) |
+| **Bureau Officer** | Aashish Kumar | `BUREAU_OFFICER` | Approval Bureau | Manage assigned complaints, recommend overlaps, transition case stages |
+| **Bureau Officer** | Priya Nair | `BUREAU_OFFICER` | Finance Bureau | Financial anomaly inspection, inter-bureau coordination, evidence review |
+| **Bureau Officer** | Vikram Singh | `BUREAU_OFFICER` | Policy & Academic Bureau | Curriculum complaints, regulatory compliance verification |
+| **Bureau Head** | Dr. Sunita Sharma | `BUREAU_HEAD` | Public Grievance Cell | Authorize cross-bureau taskforces, dispatch show-cause notices, bureau audits |
+| **Apex Admin** | Prof. R. K. Verma | `APEX_ADMIN` | Central Secretariat (Apex) | System-wide visibility, edit statutory SLA rules, reassign officer roles |
+| **Complainant** | Pooja Mehta | `COMPLAINANT` | Citizen / Student | Register new grievances, track personal submitted cases |
 
 ---
 
-## 💻 Local Setup & Development
+## 💻 Local Setup & Development Instructions
 
 ### Prerequisites
-- **Node.js:** v18.0.0 or higher
-- **npm:** v9.0.0 or higher (or `bun` / `pnpm`)
+- **Node.js:** v18.0.0 or higher (v20+ recommended)
+- **npm:** v9.0.0 or higher (or `pnpm` / `bun`)
 
-### Installation & Run
-
+### Setup Steps
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-org/aicte-caseconnect.git
+   git clone https://github.com/namit27y-dotcom/aicte-caseconnect.git
    cd aicte-caseconnect
    ```
 
-2. **Install dependencies:**
+2. **Install project dependencies:**
    ```bash
    npm install
    ```
 
-3. **Start the development server:**
+3. **Start the local development server:**
    ```bash
    npm run dev
    ```
-   The app will start at `http://localhost:3000`.
+   The application will run at **`http://localhost:3000`**.
 
-4. **Verify TypeScript & build:**
+4. **Execute TypeScript typecheck & test suite:**
    ```bash
-   npm run lint   # Runs: tsc --noEmit
-   npm run build  # Builds optimized production bundle in dist/
+   npm run lint        # TypeScript compiler check (tsc --noEmit)
+   npm run test        # Runs all 115 Vitest test cases
+   ```
+
+5. **Generate optimized production bundle:**
+   ```bash
+   npm run build       # Builds production client in dist/
+   npm run preview     # Locally previews the production build
    ```
 
 ---
 
 ## 🔒 Synthetic Data & Regulatory Disclaimer
 
-- **SIH 2026 Prototype:** All institutional names, complaint records, addresses, officer names, and dates presented in this prototype are **purely synthetic demo data** created for Smart India Hackathon 2026.
-- **No Real AICTE Systems Affected:** This application does not connect to or alter any live AICTE databases, government servers, or official records.
-- **Compliance:** Strict compliance with SIH problem statement guidelines (`SIH26264`).
+- **Smart India Hackathon 2026 Prototype:** All institutional names, complaint registration numbers, personal names, and dates in this repository are **purely synthetic demonstration data** created specifically for technical evaluation under Problem Statement `SIH26264`.
+- **No Production AICTE Linkage:** This application operates autonomously as a decoupled client-side governance prototype and does not connect to live AICTE databases or official government systems.
 
 ---
 
-## 📄 License & Team
+## 📄 Team & Hackathon Credentials
 
-- **Team:** `VECTOR_VAGABONDS`
-- **Hackathon:** Smart India Hackathon 2026
-- **License:** Apache-2.0
+- **Problem Statement ID:** `SIH26264`
+- **Problem Statement:** AICTE Centralized Monitoring & Coordination System for Technical Institutions
+- **Hackathon:** Smart India Hackathon 2026 (SIH 2026)
+- **Team Name:** `VECTOR_VAGABONDS`
+- **Repository:** [https://github.com/namit27y-dotcom/aicte-caseconnect.git](https://github.com/namit27y-dotcom/aicte-caseconnect.git)
